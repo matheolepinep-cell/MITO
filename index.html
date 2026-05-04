@@ -13,58 +13,46 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --black:#000; --bg:#0A0A0A; --bg2:#141414; --bg3:#1E1E1E; --bg4:#2A2A2A;
-  --red:#FF3B3B; --red-glow:rgba(255,59,59,0.35); --red-glow-sm:rgba(255,59,59,0.15);
-  --white:#FFF; --grey:#B0B0B0; --grey2:#666; --radius:20px; --radius-sm:12px;
+:root{
+  --black:#000;--bg:#0A0A0A;--bg2:#141414;--bg3:#1E1E1E;--bg4:#2A2A2A;
+  --red:#FF3B3B;--red-glow:rgba(255,59,59,0.35);--red-glow-sm:rgba(255,59,59,0.15);
+  --white:#FFF;--grey:#B0B0B0;--grey2:#666;--radius:20px;--radius-sm:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;width:100%;overflow:hidden;background:var(--black);color:var(--white);font-family:'Inter',sans-serif;touch-action:manipulation;}
 
-/* SCREENS */
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;opacity:0;pointer-events:none;transition:opacity .4s ease,transform .4s ease;transform:translateY(20px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
 .screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
-.screen.from-right{transform:translateX(40px);}
-.screen.from-left{transform:translateX(-40px);}
 
-/* Role reveal dramatic */
-@keyframes roleShake{0%,100%{transform:rotate(0);}20%{transform:rotate(-2deg);}40%{transform:rotate(2deg);}60%{transform:rotate(-1deg);}80%{transform:rotate(1deg);}}
-@keyframes liePulse{0%,100%{box-shadow:0 0 60px rgba(255,59,59,.15);}50%{box-shadow:0 0 100px rgba(255,59,59,.35),0 0 200px rgba(255,59,59,.1);}}
-.role-card.lie{animation:revealIn .5s cubic-bezier(.34,1.4,.64,1) forwards,liePulse 2s ease-in-out 1s infinite;}
-
-/* Suspense overlay */
+/* SUSPENSE */
 .suspense-overlay{position:fixed;inset:0;background:#000;z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;opacity:0;pointer-events:none;transition:opacity .3s;}
 .suspense-overlay.show{opacity:1;pointer-events:all;}
 .suspense-text{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,10vw,48px);letter-spacing:4px;color:#fff;text-align:center;}
 .suspense-bar{width:200px;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;}
-.suspense-bar-fill{height:100%;background:var(--red);width:0%;transition:width linear;box-shadow:0 0 8px var(--red-glow);}
+.suspense-bar-fill{height:100%;background:var(--red);width:0%;box-shadow:0 0 8px var(--red-glow);}
 
-/* MVP screen */
+/* MVP */
 @keyframes spotlightPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,59,59,0),0 0 60px var(--red-glow);}50%{box-shadow:0 0 0 30px rgba(255,59,59,.05),0 0 100px rgba(255,59,59,.4);}}
 @keyframes crownDrop{0%{transform:translateY(-40px) rotate(-10deg);opacity:0;}60%{transform:translateY(8px) rotate(3deg);}100%{transform:translateY(0) rotate(0);opacity:1;}}
 @keyframes nameReveal{0%{opacity:0;letter-spacing:20px;}100%{opacity:1;letter-spacing:4px;}}
-@keyframes starsBurst{0%{transform:scale(0) rotate(0);opacity:1;}100%{transform:scale(2) rotate(180deg);opacity:0;}}
-.mvp-ring{width:180px;height:180px;border-radius:50%;border:3px solid var(--red);animation:spotlightPulse 2s ease-in-out infinite;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+@keyframes particleBurst{0%{transform:scale(0) rotate(0);opacity:1;}100%{transform:scale(2.5) rotate(180deg);opacity:0;}}
+.mvp-ring{width:180px;height:180px;border-radius:50%;border:3px solid var(--red);animation:spotlightPulse 2s ease-in-out infinite;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .mvp-crown{font-size:48px;animation:crownDrop .6s cubic-bezier(.34,1.56,.64,1) .3s both;}
-.mvp-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,12vw,56px);letter-spacing:4px;animation:nameReveal .8s ease .5s both;color:#fff;}
+.mvp-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,12vw,56px);letter-spacing:4px;animation:nameReveal .8s ease .5s both;}
 .mvp-subtitle{font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--red);animation:nameReveal .8s ease .7s both;}
-.particles{position:absolute;inset:0;pointer-events:none;}
-.particle{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--red);animation:starsBurst .8s ease forwards;}
+.particle{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--red);animation:particleBurst .8s ease forwards;}
 
-/* TYPOGRAPHY */
+/* TYPO */
 .t-hero{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,22vw,96px);letter-spacing:4px;line-height:.9;}
-.t-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,9vw,42px);letter-spacing:2px;line-height:1;}
 .t-question{font-size:clamp(22px,6vw,28px);font-weight:700;line-height:1.3;}
-.t-body{font-size:15px;color:var(--grey);line-height:1.6;}
 .t-sm{font-size:13px;color:var(--grey);}
 .t-xs{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--grey2);}
-.t-red{color:var(--red);}
 .t-center{text-align:center;}
 .w100{width:100%;}
 
 /* BUTTONS */
 .btn{width:100%;padding:18px 28px;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .15s ease;}
-.btn:active{transform:scale(0.97);}
+.btn:active{transform:scale(.97);}
 .btn-red{background:var(--red);color:#fff;box-shadow:0 0 24px var(--red-glow),0 4px 16px rgba(0,0,0,.4);}
 .btn-dark{background:var(--bg3);color:#fff;border:1px solid var(--bg4);}
 .btn-outline{background:transparent;color:#fff;border:1.5px solid var(--bg4);}
@@ -85,7 +73,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
 .progress-wrap{width:100%;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;}
 .progress-fill{height:100%;background:var(--red);border-radius:2px;box-shadow:0 0 8px var(--red-glow);transition:width .5s ease;}
 
-/* CONTENT WRAPPER */
+/* CONTENT */
 .content{width:100%;max-width:480px;padding:0 20px;margin:0 auto;display:flex;flex-direction:column;}
 
 /* NOTIF */
@@ -101,8 +89,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
 /* DOTS */
 .dots{display:flex;gap:6px;justify-content:center;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--grey2);animation:dotpulse 1.4s infinite;}
-.dot:nth-child(2){animation-delay:.2s;}
-.dot:nth-child(3){animation-delay:.4s;}
+.dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
 @keyframes dotpulse{0%,80%,100%{opacity:.3;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
 
 /* GAPS */
@@ -120,82 +107,75 @@ input::placeholder{color:var(--grey2);font-weight:400;}
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .3s;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal-sheet{width:100%;background:var(--bg);border-radius:24px 24px 0 0;padding:20px 20px 48px;transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.2,.64,1);max-height:85vh;min-height:50vh;overflow-y:auto;}
+.modal-sheet{width:100%;background:var(--bg);border-radius:24px 24px 0 0;padding:20px 20px 48px;transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.2,.64,1);max-height:85vh;overflow-y:auto;}
 .modal-overlay.open .modal-sheet{transform:translateY(0);}
 .modal-handle{width:40px;height:4px;border-radius:2px;background:var(--bg4);margin:0 auto 24px;}
-.rules-cards{display:flex;flex-direction:column;gap:10px;padding:4px 0 12px;}
-.rule-card{width:100%;padding:18px 16px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--bg3);}
-.rule-num{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--red);line-height:1;margin-bottom:8px;text-shadow:0 0 20px var(--red-glow);}
-.rule-title{font-size:14px;font-weight:700;margin-bottom:6px;}
-.rule-body{font-size:13px;color:var(--grey);line-height:1.5;}
+.rule-card{width:100%;padding:18px 16px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--bg3);margin-bottom:10px;}
+.rule-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--red);line-height:1;margin-bottom:6px;text-shadow:0 0 20px var(--red-glow);}
 
 /* AVATARS */
 .avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%;}
-.avatar-opt{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;border:2.5px solid transparent;cursor:pointer;transition:all .2s;background:#fff;overflow:hidden;width:100%;}
+.avatar-opt{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2.5px solid transparent;cursor:pointer;transition:all .2s;background:#fff;overflow:hidden;width:100%;}
 .avatar-opt img{width:100%;height:100%;object-fit:cover;}
 .avatar-opt.selected{border-color:var(--red);box-shadow:0 0 0 3px var(--red),0 0 16px var(--red-glow);}
 
 /* CATEGORY */
 .cat-card{padding:16px 18px;background:var(--bg2);border:1.5px solid var(--bg3);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;}
-.cat-card.selected{border-color:var(--red);background:rgba(255,59,59,.08);box-shadow:0 0 16px var(--red-glow-sm);}
-.cat-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--bg4);flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.cat-card.selected{border-color:var(--red);background:rgba(255,59,59,.08);}
+.cat-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .cat-card.selected .cat-check{background:var(--red);border-color:var(--red);}
 .cat-card.selected .cat-check::after{content:'✓';font-size:11px;color:#fff;font-weight:700;}
 
 /* CONFIG */
 .config-row{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--bg3);}
 .stepper{display:flex;align-items:center;gap:14px;}
-.stepper-btn{width:34px;height:34px;border-radius:10px;background:var(--bg3);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.stepper-btn{width:34px;height:34px;border-radius:10px;background:var(--bg3);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .stepper-btn:active{background:var(--bg4);}
 .stepper-val{font-family:'Bebas Neue',sans-serif;font-size:28px;min-width:32px;text-align:center;}
 
 /* PLAYER LIST */
 .player-list{width:100%;display:flex;flex-direction:column;gap:8px;}
 .player-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--bg3);}
-.p-avatar{font-size:26px;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bg3);flex-shrink:0;overflow:hidden;}
+.p-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--bg3);}
 .p-avatar img{width:100%;height:100%;object-fit:cover;}
 .p-name{font-size:15px;font-weight:600;flex:1;}
 .p-host{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--red);text-transform:uppercase;}
 
-/* ROLE REVEAL */
-.role-card{width:100%;padding:48px 32px;border-radius:28px;display:flex;flex-direction:column;align-items:center;text-align:center;animation:revealIn .5s cubic-bezier(.34,1.4,.64,1) forwards;}
+/* ROLE */
+.role-card{width:100%;padding:48px 32px;border-radius:28px;display:flex;flex-direction:column;align-items:center;text-align:center;}
 .role-card.truth{background:var(--bg2);border:1px solid var(--bg3);}
 .role-card.lie{background:rgba(255,59,59,.07);border:1.5px solid var(--red);box-shadow:0 0 60px rgba(255,59,59,.15);}
 @keyframes revealIn{from{opacity:0;transform:scale(.85) translateY(30px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.role-card{animation:revealIn .5s cubic-bezier(.34,1.4,.64,1) forwards;}
 .role-big{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,15vw,72px);letter-spacing:3px;line-height:1;}
 .role-big.lie{color:var(--red);text-shadow:0 0 30px var(--red-glow);}
 
 /* VOTE */
 .vote-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg2);border-radius:var(--radius-sm);border:2px solid var(--bg3);cursor:pointer;transition:all .2s;}
-.vote-item.selected{border-color:var(--red);background:rgba(255,59,59,.08);box-shadow:0 0 16px var(--red-glow-sm);}
-.vote-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.vote-item.selected{border-color:var(--red);background:rgba(255,59,59,.08);}
+.vote-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--bg4);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .vote-item.selected .vote-check{background:var(--red);border-color:var(--red);}
 .vote-item.selected .vote-check::after{content:'✓';font-size:12px;color:#fff;font-weight:700;}
 
 /* RESULTS */
-.liar-ring{width:160px;height:160px;border-radius:50%;border:3px solid var(--red);box-shadow:0 0 0 8px rgba(255,59,59,.1),0 0 40px var(--red-glow);display:flex;align-items:center;justify-content:center;font-size:72px;animation:ringpulse 2s ease-in-out infinite;}
-@keyframes ringpulse{0%,100%{box-shadow:0 0 0 8px rgba(255,59,59,.1),0 0 40px var(--red-glow);}50%{box-shadow:0 0 0 16px rgba(255,59,59,.05),0 0 60px var(--red-glow);}}
+.liar-ring{width:160px;height:160px;border-radius:50%;border:3px solid var(--red);box-shadow:0 0 0 8px rgba(255,59,59,.1),0 0 40px var(--red-glow);display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .menteur-text{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,18vw,80px);color:var(--red);letter-spacing:4px;text-shadow:0 0 30px var(--red-glow);line-height:1;}
 .role-pill{padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
 .role-pill.lie{background:var(--red);color:#fff;}
 .role-pill.truth{background:var(--bg3);color:var(--grey);}
-.vote-count-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.vote-count-avatar{font-size:28px;width:48px;height:48px;border-radius:50%;background:var(--bg2);border:2px solid var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.vote-count-avatar img{width:100%;height:100%;object-fit:cover;}
-.vote-count-avatar.accused{border-color:var(--red);}
-.vote-count-num{font-family:'Bebas Neue',sans-serif;font-size:20px;}
 
 /* PODIUM */
 .podium-wrap{display:flex;align-items:flex-end;justify-content:center;gap:8px;width:100%;}
 .podium-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;}
 .podium-bar{width:100%;border-radius:8px 8px 0 0;background:var(--bg3);}
 .podium-bar.first{background:var(--red);box-shadow:0 0 20px var(--red-glow);}
-
-/* ROOM CODE */
 .room-code{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,20vw,96px);letter-spacing:16px;}
-
-/* WAITING */
 .waiting-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:40px 24px;}
+
+/* TIMER VOTE */
+.vote-timer{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--red);text-shadow:0 0 20px var(--red-glow);line-height:1;}
+@keyframes timerPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+.vote-timer.urgent{animation:timerPulse .5s ease-in-out infinite;}
 </style>
 </head>
 <body>
@@ -210,7 +190,6 @@ input::placeholder{color:var(--grey2);font-weight:400;}
 
 <div class="notif" id="notif"></div>
 
-<!-- SUSPENSE OVERLAY -->
 <div class="suspense-overlay" id="suspense">
   <div class="suspense-text" id="suspense-text">RÉVÉLATION</div>
   <div class="suspense-bar"><div class="suspense-bar-fill" id="suspense-fill"></div></div>
@@ -221,24 +200,22 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:20px;">LES RÈGLES</div>
-    <div class="rules-cards">
-      <div class="rule-card"><div class="rule-num">01</div><div class="rule-title">Rôles secrets</div><div class="rule-body">Chaque manche tu reçois un rôle : <strong>Vérité</strong> ou <span style="color:var(--red);font-weight:700;">Mensonge</span>. Ne le montre à personne.</div></div>
-      <div class="rule-card"><div class="rule-num">02</div><div class="rule-title">Répondre à voix haute</div><div class="rule-body">Une question s'affiche. Tout le monde répond à voix haute dans l'ordre. Les menteurs doivent inventer.</div></div>
-      <div class="rule-card"><div class="rule-num">03</div><div class="rule-title">Débat libre</div><div class="rule-body">Après les réponses, échangez librement. Défendez-vous, accusez les autres, semez le doute.</div></div>
-      <div class="rule-card"><div class="rule-num">04</div><div class="rule-title">Le vote</div><div class="rule-body">Chaque joueur vote pour celui qu'il pense être le menteur. Un seul vote par personne.</div></div>
-      <div class="rule-card"><div class="rule-num">05</div><div class="rule-title">Les points</div><div class="rule-body">Menteur non démasqué → <span style="color:var(--red);font-weight:700;">+2 pts</span>. Vérité qui vote juste → <strong>+1 pt</strong>.</div></div>
-    </div>
+    <div class="rule-card"><div class="rule-num">01</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Rôles secrets</div><div style="font-size:13px;color:var(--grey);">Chaque manche tu reçois un rôle : <strong>Vérité</strong> ou <span style="color:var(--red);font-weight:700;">Mensonge</span>.</div></div>
+    <div class="rule-card"><div class="rule-num">02</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Répondre à voix haute</div><div style="font-size:13px;color:var(--grey);">Tout le monde répond dans l'ordre. Les menteurs doivent inventer.</div></div>
+    <div class="rule-card"><div class="rule-num">03</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Débat libre</div><div style="font-size:13px;color:var(--grey);">Échangez librement. Défendez-vous, accusez les autres.</div></div>
+    <div class="rule-card"><div class="rule-num">04</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Le vote</div><div style="font-size:13px;color:var(--grey);">Chaque joueur vote pour celui qu'il suspecte. Un seul vote.</div></div>
+    <div class="rule-card"><div class="rule-num">05</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Les points</div><div style="font-size:13px;color:var(--grey);">Menteur non démasqué → <span style="color:var(--red);font-weight:700;">+2 pts</span>. Vérité qui vote juste → <strong>+1 pt</strong>.</div></div>
     <div class="g20"></div>
     <button class="btn btn-dark" onclick="closeRules()">Compris !</button>
   </div>
 </div>
 
-<!-- ═══════ HOME ═══════ -->
+<!-- HOME -->
 <div class="screen active" id="s-home">
   <div class="home-bg"></div>
   <div style="width:100%;padding:52px 20px 0;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2;">
-    <button class="btn-dark btn" style="width:auto;padding:8px 16px;font-size:13px;letter-spacing:1px;" onclick="openRules()">Règles</button>
-    <button onclick="shareApp()" style="width:38px;height:38px;border-radius:50%;background:var(--bg2);border:1px solid var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px;">
+    <button class="btn-dark btn" style="width:auto;padding:8px 16px;font-size:13px;" onclick="openRules()">Règles</button>
+    <button onclick="shareApp()" style="width:38px;height:38px;border-radius:50%;background:var(--bg2);border:1px solid var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
     </button>
   </div>
@@ -260,7 +237,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   <div class="g40"></div>
 </div>
 
-<!-- ═══════ CREATE ═══════ -->
+<!-- CREATE -->
 <div class="screen" id="s-create">
   <div class="top-bar">
     <button class="top-bar-icon" onclick="showScreen('s-home')">←</button>
@@ -268,16 +245,13 @@ input::placeholder{color:var(--grey2);font-weight:400;}
     <div style="width:36px;"></div>
   </div>
   <div class="content">
-    <div class="t-xs">Ton avatar</div>
-    <div class="g12"></div>
+    <div class="t-xs">Ton avatar</div><div class="g12"></div>
     <div class="avatar-grid" id="create-avatar-grid"></div>
     <div class="g20"></div>
-    <div class="t-xs">Ton pseudo</div>
-    <div class="g8"></div>
+    <div class="t-xs">Ton pseudo</div><div class="g8"></div>
     <input type="text" id="create-name" placeholder="Ex: Alex" maxlength="16">
     <div class="g20"></div>
-    <div class="t-xs">Catégorie de questions</div>
-    <div class="g12"></div>
+    <div class="t-xs">Catégorie de questions</div><div class="g12"></div>
     <div class="stack">
       <div class="cat-card selected" id="cat-soft" onclick="selectCat('soft')">
         <span style="font-size:26px;flex-shrink:0;">🌿</span>
@@ -296,8 +270,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
       </div>
     </div>
     <div class="g20"></div>
-    <div class="t-xs">Configuration</div>
-    <div class="g12"></div>
+    <div class="t-xs">Configuration</div><div class="g12"></div>
     <div class="stack">
       <div class="config-row">
         <span style="font-size:14px;font-weight:600;">Nombre de manches</span>
@@ -322,7 +295,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   </div>
 </div>
 
-<!-- ═══════ JOIN ═══════ -->
+<!-- JOIN -->
 <div class="screen" id="s-join">
   <div class="top-bar">
     <button class="top-bar-icon" onclick="showScreen('s-home')">←</button>
@@ -330,16 +303,13 @@ input::placeholder{color:var(--grey2);font-weight:400;}
     <div style="width:36px;"></div>
   </div>
   <div class="content">
-    <div class="t-xs">Ton avatar</div>
-    <div class="g12"></div>
+    <div class="t-xs">Ton avatar</div><div class="g12"></div>
     <div class="avatar-grid" id="join-avatar-grid"></div>
     <div class="g20"></div>
-    <div class="t-xs">Ton pseudo</div>
-    <div class="g8"></div>
+    <div class="t-xs">Ton pseudo</div><div class="g8"></div>
     <input type="text" id="join-name" placeholder="Ex: Alex" maxlength="16">
     <div class="g20"></div>
-    <div class="t-xs">Code de la salle</div>
-    <div class="g8"></div>
+    <div class="t-xs">Code de la salle</div><div class="g8"></div>
     <input type="text" id="join-code" placeholder="0000" maxlength="4" class="code-input" oninput="this.value=this.value.replace(/\D/g,'')">
     <div class="g24"></div>
     <button class="btn btn-red" id="btn-join" onclick="joinGame()">Rejoindre</button>
@@ -347,7 +317,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   </div>
 </div>
 
-<!-- ═══════ LOBBY ═══════ -->
+<!-- LOBBY -->
 <div class="screen" id="s-lobby">
   <div class="top-bar">
     <div style="width:36px;"></div>
@@ -355,15 +325,12 @@ input::placeholder{color:var(--grey2);font-weight:400;}
     <div style="width:36px;"></div>
   </div>
   <div class="content">
-    <div class="t-xs t-center">Code de la salle</div>
-    <div class="g8"></div>
+    <div class="t-xs t-center">Code de la salle</div><div class="g8"></div>
     <div class="room-code t-center" id="lobby-code">----</div>
     <div class="g4"></div>
     <div class="t-sm t-center">Partage ce code avec tes amis</div>
     <div class="g12"></div>
-    <button class="btn btn-dark" style="max-width:280px;font-size:14px;padding:12px 20px;" onclick="shareLobbyLink()">
-      🔗 Partager le lien d'invitation
-    </button>
+    <button class="btn btn-dark" style="padding:12px 20px;font-size:14px;" onclick="shareLobbyLink()">Partager le lien d'invitation</button>
     <div class="g24"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:12px;">
       <div class="t-xs">Joueurs</div>
@@ -383,11 +350,11 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   </div>
 </div>
 
-<!-- ═══════ ROLE REVEAL ═══════ -->
+<!-- ROLE REVEAL -->
 <div class="screen" id="s-role">
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;width:100%;">
     <div class="t-xs" id="role-round-label" style="margin-bottom:32px;">MANCHE 1</div>
-    <div class="role-card truth" id="role-card" style="max-width:340px;">
+    <div class="role-card truth" id="role-card" style="max-width:340px;width:100%;">
       <div style="font-size:56px;margin-bottom:20px;" id="role-emoji">◯</div>
       <div class="t-xs" style="margin-bottom:8px;">TON RÔLE</div>
       <div class="role-big truth" id="role-big-text">VÉRITÉ</div>
@@ -402,7 +369,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   </div>
 </div>
 
-<!-- ═══════ WAITING ROLES ═══════ -->
+<!-- WAITING ROLES -->
 <div class="screen" id="s-waiting-roles">
   <div class="waiting-center">
     <div class="t-xs">EN ATTENTE</div>
@@ -411,7 +378,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   </div>
 </div>
 
-<!-- ═══════ QUESTION ═══════ -->
+<!-- QUESTION -->
 <div class="screen" id="s-question">
   <div style="width:100%;padding:52px 20px 12px;flex-shrink:0;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -421,7 +388,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
     <div class="progress-wrap"><div class="progress-fill" id="q-progress" style="width:20%;"></div></div>
   </div>
   <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px;">
-    <div class="t-question t-center" id="question-text" style="transform:rotate(-1.5deg);display:inline-block;line-height:1.4;padding:0 8px;">Chargement...</div>
+    <div class="t-question t-center" id="question-text">Chargement...</div>
   </div>
   <div style="width:100%;padding:16px 20px 48px;flex-shrink:0;">
     <div id="q-host-btn" style="display:none;">
@@ -433,7 +400,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   </div>
 </div>
 
-<!-- ═══════ VOTING ═══════ -->
+<!-- VOTING -->
 <div class="screen" id="s-voting">
   <div style="width:100%;padding:52px 20px 12px;flex-shrink:0;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -454,16 +421,14 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   </div>
 </div>
 
-<!-- ═══════ ROUND RESULTS ═══════ -->
+<!-- ROUND RESULTS -->
 <div class="screen" id="s-round-results">
   <div style="width:100%;padding:52px 20px 12px;flex-shrink:0;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <div class="t-sm" id="rr-round-label">Résultats · Manche 1</div>
-    </div>
+    <div style="margin-bottom:10px;"><div class="t-sm" id="rr-round-label">Résultats · Manche 1</div></div>
     <div class="progress-wrap"><div class="progress-fill" id="rr-progress" style="width:60%;"></div></div>
   </div>
   <div class="content" style="padding-top:20px;align-items:center;text-align:center;">
-    <div class="liar-ring" id="rr-liar-avatar">🎭</div>
+    <div class="liar-ring" id="rr-liar-avatar" style="margin:0 auto;"></div>
     <div class="g20"></div>
     <div style="font-size:18px;font-weight:500;color:var(--grey);" id="rr-liar-name">---</div>
     <div class="g4"></div>
@@ -485,26 +450,26 @@ input::placeholder{color:var(--grey2);font-weight:400;}
   </div>
 </div>
 
-<!-- ═══════ MVP ═══════ -->
+<!-- MVP -->
 <div class="screen" id="s-mvp">
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;width:100%;position:relative;">
-    <div class="particles" id="mvp-particles"></div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;width:100%;position:relative;overflow:hidden;">
+    <div id="mvp-particles" style="position:absolute;inset:0;pointer-events:none;"></div>
     <div class="t-xs" style="margin-bottom:24px;letter-spacing:3px;">MEILLEUR JOUEUR</div>
     <div class="mvp-ring" id="mvp-ring">
       <img id="mvp-avatar" src="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
     </div>
     <div class="g24"></div>
-    <div class="mvp-crown" id="mvp-crown">👑</div>
+    <div class="mvp-crown">👑</div>
     <div class="g8"></div>
     <div class="mvp-name" id="mvp-name">---</div>
     <div class="g8"></div>
-    <div class="mvp-subtitle" id="mvp-subtitle">GRAND VAINQUEUR</div>
+    <div class="mvp-subtitle">GRAND VAINQUEUR</div>
     <div class="g40"></div>
-    <button class="btn btn-outline-red" style="max-width:320px;width:100%;" onclick="showPodium()">Voir le classement complet</button>
+    <button class="btn btn-outline-red" style="max-width:320px;width:100%;" onclick="showPodium()">Voir le classement</button>
   </div>
 </div>
 
-<!-- ═══════ PODIUM ═══════ -->
+<!-- PODIUM -->
 <div class="screen" id="s-podium">
   <div style="padding:52px 20px 24px;text-align:center;flex-shrink:0;width:100%;">
     <div class="t-xs" style="margin-bottom:8px;">FIN DE PARTIE</div>
@@ -521,143 +486,141 @@ input::placeholder{color:var(--grey2);font-weight:400;}
 
 <script>
 const SUPABASE_URL='https://pyzazjxltmkwhhjcxnnu.supabase.co';
-
-// ── SONS ──
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx = null;
-function getAudioCtx(){if(!audioCtx)audioCtx=new AudioCtx();return audioCtx;}
-
-function playTone(freq, duration, type='sine', vol=0.3){
-  try{
-    const ctx=getAudioCtx();
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.connect(gain);gain.connect(ctx.destination);
-    osc.type=type;osc.frequency.setValueAtTime(freq,ctx.currentTime);
-    gain.gain.setValueAtTime(vol,ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+duration);
-    osc.start(ctx.currentTime);osc.stop(ctx.currentTime+duration);
-  }catch(e){}
-}
-
-function soundRoleReveal(isLie){
-  if(isLie){
-    // Son grave menaçant
-    playTone(80,.3,'sawtooth',.2);
-    setTimeout(()=>playTone(60,.5,'sawtooth',.3),200);
-    setTimeout(()=>playTone(40,.8,'sawtooth',.4),400);
-  } else {
-    // Son neutre clair
-    playTone(440,.15,'sine',.2);
-    setTimeout(()=>playTone(550,.2,'sine',.15),150);
-  }
-}
-
-function soundVoteSubmit(){
-  playTone(600,.08,'square',.15);
-  setTimeout(()=>playTone(800,.12,'square',.1),80);
-}
-
-function soundRevealResults(){
-  // Suspense montant
-  [200,240,280,320,400].forEach((f,i)=>setTimeout(()=>playTone(f,.2,'sine',.2),i*120));
-  setTimeout(()=>playTone(600,.4,'sine',.3),700);
-}
-
-function soundMVP(){
-  // Fanfare courte
-  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,.25,'sine',.25),i*150));
-}
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5emF6anhsdG1rd2hoamN4bm51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4OTU3MDAsImV4cCI6MjA5MzQ3MTcwMH0.S1_CsGBSdoCpcYdi9Q_E63UfbgtId8yBTvQtrneGgpQ';
 
 const api=async(path,opts={})=>{
-  const res=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':opts.prefer||'return=representation',...opts.headers},...opts});
+  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':opts.prefer||'return=representation',...opts.headers},...opts});
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||'API error');}
   if(res.status===204)return null;
   return res.json();
 };
 const db={
-  get:(t,q='')=>api(`${t}?${q}`),
+  get:(t,q)=>api(t+(q?'?'+q:'')),
   post:(t,b)=>api(t,{method:'POST',body:JSON.stringify(b)}),
-  patch:(t,q,b)=>api(`${t}?${q}`,{method:'PATCH',body:JSON.stringify(b),prefer:'return=representation'}),
+  patch:(t,q,b)=>api(t+'?'+q,{method:'PATCH',body:JSON.stringify(b),prefer:'return=representation'}),
 };
 
+// ── AUDIO ──────────────────────────────────────────────────────────────────
+let audioCtx=null;
+function getACtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playTone(freq,dur,type,vol){
+  try{const c=getACtx(),o=c.createOscillator(),g=c.createGain();
+  o.connect(g);g.connect(c.destination);o.type=type||'sine';
+  o.frequency.setValueAtTime(freq,c.currentTime);
+  g.gain.setValueAtTime(vol||.25,c.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dur);
+  o.start(c.currentTime);o.stop(c.currentTime+dur);}catch(e){}
+}
+function soundVoteSubmit(){playTone(600,.08,'square',.15);setTimeout(()=>playTone(800,.12,'square',.1),80);}
+function soundRevealResults(){[200,240,280,320,400].forEach((f,i)=>setTimeout(()=>playTone(f,.2,'sine',.2),i*120));setTimeout(()=>playTone(600,.4,'sine',.3),700);}
+function soundMVP(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,.25,'sine',.25),i*150));}
+
+// Son chrono vote — tick régulier
+let chronoInterval=null;
+function startChronoSound(){
+  stopChronoSound();
+  let tick=0;
+  chronoInterval=setInterval(()=>{
+    tick++;
+    // Accélère et monte en fréquence avec le temps
+    const freq=300+tick*8;
+    const vol=Math.min(.15+tick*.005,.3);
+    playTone(Math.min(freq,800),.05,'square',vol);
+  },1000);
+}
+function stopChronoSound(){if(chronoInterval){clearInterval(chronoInterval);chronoInterval=null;}}
+
+// ── SUSPENSE ──────────────────────────────────────────────────────────────
+function showSuspense(callback,text,duration){
+  text=text||'RÉVÉLATION';duration=duration||2000;
+  const overlay=document.getElementById('suspense');
+  const fill=document.getElementById('suspense-fill');
+  document.getElementById('suspense-text').textContent=text;
+  fill.style.transition='none';fill.style.width='0%';
+  overlay.classList.add('show');
+  setTimeout(()=>{fill.style.transition='width '+duration+'ms linear';fill.style.width='100%';},50);
+  setTimeout(()=>{overlay.classList.remove('show');if(callback)callback();},duration+300);
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────
 const AVATARS=['/avatars/av1.png','/avatars/av2.png','/avatars/av3.png','/avatars/av4.png','/avatars/av5.png','/avatars/av6.png','/avatars/av7.png','/avatars/av8.png','/avatars/av9.png','/avatars/av10.png'];
 const ROUNDS_OPT=[2,3,4,5,6,7,8,9,10,'∞'];
-
-let state={roomId:null,roomCode:null,playerId:null,playerName:null,isHost:false,role:null,currentRound:0,roundCount:5,liarCount:1,category:'soft',currentQuestionId:null,selectedVoteTarget:null,players:[],hasVoted:false,createAvatar:AVATARS[0],joinAvatar:AVATARS[0]};
+let state={roomId:null,roomCode:null,playerId:null,isHost:false,role:null,currentRound:0,roundCount:5,liarCount:1,category:'soft',currentQuestionId:null,selectedVoteTarget:null,players:[],hasVoted:false,createAvatar:AVATARS[0],joinAvatar:AVATARS[0],sortedPlayers:null};
 let pollTimer=null,cfgRounds=5,cfgLiars=1,cfgRoundsIdx=3,selectedCat='soft';
 
-function avatarHtml(avatar,size='44px'){
-  const a=avatar||AVATARS[0];
-  return `<img src="${a}" style="width:${size};height:${size};border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.opacity='.3'">`;
+// ── UI HELPERS ────────────────────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);el.classList.add('active');el.scrollTop=0;
+}
+function showNotif(msg,type){
+  const n=document.getElementById('notif');n.textContent=msg;
+  n.className='notif'+(type?' '+type:'');void n.offsetWidth;n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),2800);
+}
+function setLoading(show){document.getElementById('loading').classList.toggle('hide',!show);}
+function openRules(){document.getElementById('rules-modal').classList.add('open');}
+function closeRules(){document.getElementById('rules-modal').classList.remove('open');}
+
+function avatarHtml(avatar,size){
+  size=size||'44px';
+  return '<img src="'+(avatar||AVATARS[0])+'" style="width:'+size+';height:'+size+';border-radius:50%;object-fit:cover;" onerror="this.style.opacity=\'.3\'">';
 }
 
 function renderAvatarGrid(gridId,stateKey){
   const grid=document.getElementById(gridId);
-  grid.innerHTML=AVATARS.map(a=>`
-    <div class="avatar-opt ${state[stateKey]===a?'selected':''}" onclick="selectAvatar('${gridId}','${stateKey}','${a}')">
-      <img src="${a}" onerror="this.parentNode.textContent='?'">
-    </div>`).join('');
+  grid.innerHTML=AVATARS.map(function(a){
+    return '<div class="avatar-opt '+(state[stateKey]===a?'selected':'')+'" onclick="selectAvatar(\''+gridId+'\',\''+stateKey+'\',\''+a+'\')"><img src="'+a+'" onerror="this.parentNode.innerHTML=\'?\'" ></div>';
+  }).join('');
 }
 function selectAvatar(gridId,stateKey,avatar){state[stateKey]=avatar;renderAvatarGrid(gridId,stateKey);}
 
-function showScreen(id, dramatic=false){
-  if(dramatic){
-    showSuspense(()=>{
-      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-      const el=document.getElementById(id);el.classList.add('active');el.scrollTop=0;
-    });
-  } else {
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    const el=document.getElementById(id);el.classList.add('active');el.scrollTop=0;
-  }
-}
-
-function showSuspense(callback, text='RÉVÉLATION', duration=2000){
-  const overlay=document.getElementById('suspense');
-  const fill=document.getElementById('suspense-fill');
-  const txt=document.getElementById('suspense-text');
-  txt.textContent=text;
-  fill.style.transition='none';fill.style.width='0%';
-  overlay.classList.add('show');
-  setTimeout(()=>{fill.style.transition=`width ${duration}ms linear`;fill.style.width='100%';},50);
-  setTimeout(()=>{overlay.classList.remove('show');callback();},duration+300);
-}
-function showNotif(msg,type=''){const n=document.getElementById('notif');n.textContent=msg;n.className='notif'+(type?' '+type:'');void n.offsetWidth;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),2800);}
-function setLoading(show){document.getElementById('loading').classList.toggle('hide',!show);}
-
-function openRules(){document.getElementById('rules-modal').classList.add('open');}
-function closeRules(){document.getElementById('rules-modal').classList.remove('open');}
-
 function shareApp(){
-  if(navigator.share){navigator.share({title:'MITO',text:'Tout le monde parle. Quelqu\'un ment. 🎭',url:'https://mito-six.vercel.app'});}
-  else{navigator.clipboard.writeText('https://mito-six.vercel.app').then(()=>showNotif('Lien copié !','success'));}
+  const url='https://mito-six.vercel.app';
+  const data={title:'MITO',text:'Tout le monde parle. Quelqu\'un ment.',url:url};
+  if(navigator.share)navigator.share(data);
+  else navigator.clipboard.writeText(url).then(function(){showNotif('Lien copié !','success');});
+}
+
+function shareLobbyLink(){
+  const url='https://mito-six.vercel.app?code='+state.roomCode;
+  const text='Rejoins ma partie MITO ! Code : '+state.roomCode;
+  if(navigator.share){
+    navigator.share({title:'MITO',text:text,url:url});
+  } else {
+    navigator.clipboard.writeText(url).then(function(){showNotif('Lien copié !','success');});
+  }
 }
 
 function selectCat(cat){
   selectedCat=cat;
-  ['soft','spicy','hot'].forEach(c=>document.getElementById('cat-'+c).classList.toggle('selected',c===cat));
+  ['soft','spicy','hot'].forEach(function(c){document.getElementById('cat-'+c).classList.toggle('selected',c===cat);});
 }
 function changeRounds(dir){cfgRoundsIdx=Math.max(0,Math.min(ROUNDS_OPT.length-1,cfgRoundsIdx+dir));cfgRounds=ROUNDS_OPT[cfgRoundsIdx];document.getElementById('rounds-val').textContent=cfgRounds;}
 function changeLiars(dir){cfgLiars=Math.max(1,Math.min(4,cfgLiars+dir));document.getElementById('liars-val').textContent=cfgLiars;}
 
+// ── CREATE GAME ───────────────────────────────────────────────────────────
 async function createGame(){
   const name=document.getElementById('create-name').value.trim();
   if(!name){showNotif('Entre ton pseudo','error');return;}
   const btn=document.getElementById('btn-create');btn.disabled=true;
   try{
-    const code=String(Math.floor(1000+Math.random()*9000));
+    // Code unique
+    let code,exists=true;
+    while(exists){code=String(Math.floor(1000+Math.random()*9000));const r=await db.get('rooms','code=eq.'+code+'&status=eq.lobby');exists=r.length>0;}
     const playerId=crypto.randomUUID();
-    const [room]=await db.post('rooms',{code,host_id:playerId,round_count:cfgRounds==='∞'?999:cfgRounds,liar_count:cfgLiars,status:'lobby',current_round:0,category:selectedCat});
-    await db.post('players',{id:playerId,room_id:room.id,name,is_host:true,score:0,has_voted:false,avatar:state.createAvatar});
-    state.roomId=room.id;state.roomCode=code;state.playerId=playerId;state.playerName=name;
+    const rc=cfgRounds==='∞'?999:cfgRounds;
+    const rooms=await db.post('rooms',{code:code,host_id:playerId,round_count:rc,liar_count:cfgLiars,status:'lobby',current_round:0,category:selectedCat});
+    const room=rooms[0];
+    await db.post('players',{id:playerId,room_id:room.id,name:name,is_host:true,score:0,has_voted:false,avatar:state.createAvatar});
+    state.roomId=room.id;state.roomCode=code;state.playerId=playerId;
     state.isHost=true;state.roundCount=cfgRounds;state.liarCount=cfgLiars;state.category=selectedCat;
     enterLobby();
   }catch(e){showNotif('Erreur : '+e.message,'error');}
   btn.disabled=false;
 }
 
+// ── JOIN GAME ─────────────────────────────────────────────────────────────
 async function joinGame(){
   const name=document.getElementById('join-name').value.trim();
   const code=document.getElementById('join-code').value.trim();
@@ -665,20 +628,23 @@ async function joinGame(){
   if(code.length!==4){showNotif('Code à 4 chiffres','error');return;}
   const btn=document.getElementById('btn-join');btn.disabled=true;
   try{
-    const rooms=await db.get('rooms',`code=eq.${code}&status=eq.lobby`);
+    const rooms=await db.get('rooms','code=eq.'+code+'&status=eq.lobby');
     if(!rooms.length){showNotif('Salle introuvable','error');btn.disabled=false;return;}
     const room=rooms[0];
-    const players=await db.get('players',`room_id=eq.${room.id}`);
+    const players=await db.get('players','room_id=eq.'+room.id);
     if(players.length>=12){showNotif('Salle complète','error');btn.disabled=false;return;}
-    if(players.some(p=>p.name.toLowerCase()===name.toLowerCase())){showNotif('Pseudo déjà pris','error');btn.disabled=false;return;}
-    const [player]=await db.post('players',{room_id:room.id,name,is_host:false,score:0,has_voted:false,avatar:state.joinAvatar});
-    state.roomId=room.id;state.roomCode=code;state.playerId=player.id;state.playerName=name;
-    state.isHost=false;state.roundCount=room.round_count;state.liarCount=room.liar_count;state.category=room.category||'soft';
+    if(players.some(function(p){return p.name.toLowerCase()===name.toLowerCase();})){showNotif('Pseudo déjà pris','error');btn.disabled=false;return;}
+    const res=await db.post('players',{room_id:room.id,name:name,is_host:false,score:0,has_voted:false,avatar:state.joinAvatar});
+    const player=res[0];
+    state.roomId=room.id;state.roomCode=code;state.playerId=player.id;
+    state.isHost=false;state.roundCount=room.round_count===999?'∞':room.round_count;
+    state.liarCount=room.liar_count;state.category=room.category||'soft';
     enterLobby();
   }catch(e){showNotif('Erreur : '+e.message,'error');}
   btn.disabled=false;
 }
 
+// ── LOBBY ─────────────────────────────────────────────────────────────────
 function enterLobby(){
   document.getElementById('lobby-code').textContent=state.roomCode;
   document.getElementById('host-actions').style.display=state.isHost?'':'none';
@@ -687,123 +653,147 @@ function enterLobby(){
 }
 
 async function refreshLobby(){
-  const players=await db.get('players',`room_id=eq.${state.roomId}&order=joined_at.asc`);
+  const players=await db.get('players','room_id=eq.'+state.roomId+'&order=joined_at.asc');
   state.players=players;
   document.getElementById('player-count').textContent=players.length;
-  document.getElementById('player-list').innerHTML=players.map(p=>`
-    <div class="player-item">
-      <div class="p-avatar">${avatarHtml(p.avatar,'44px')}</div>
-      <span class="p-name">${p.name}</span>
-      ${p.is_host?'<span class="p-host">HOST</span>':''}
-    </div>`).join('');
+  document.getElementById('player-list').innerHTML=players.map(function(p){
+    return '<div class="player-item"><div class="p-avatar">'+avatarHtml(p.avatar,'44px')+'</div><span class="p-name">'+p.name+'</span>'+(p.is_host?'<span class="p-host">HOST</span>':'')+'</div>';
+  }).join('');
   const canStart=players.length>=4;
   const btn=document.getElementById('btn-start');
-  if(btn){btn.disabled=!canStart;document.getElementById('start-hint').textContent=canStart?`${players.length} joueurs connectés`:'Minimum 4 joueurs pour démarrer';}
+  if(btn){btn.disabled=!canStart;document.getElementById('start-hint').textContent=canStart?players.length+' joueurs connectés':'Minimum 4 joueurs pour démarrer';}
 }
 
+// ── POLLING ───────────────────────────────────────────────────────────────
 function startPolling(){if(pollTimer)clearInterval(pollTimer);pollTimer=setInterval(pollGameState,2000);}
 
 async function pollGameState(){
   try{
-    const rooms=await db.get('rooms',`id=eq.${state.roomId}`);
+    const rooms=await db.get('rooms','id=eq.'+state.roomId);
     if(!rooms.length)return;
     const room=rooms[0];
     const screen=document.querySelector('.screen.active')?.id;
-    if(screen==='s-lobby'){await refreshLobby();if(room.status==='playing')await beginRound(room);}
-    else if(screen==='s-waiting-roles'){if(room.status==='playing'&&room.current_question_id)showQuestion(room);}
+
+    if(screen==='s-lobby'){
+      await refreshLobby();
+      if(room.status==='playing')await beginRound(room);
+    }
+    else if(screen==='s-waiting-roles'){
+      if(room.status==='playing'&&room.current_question_id)showQuestion(room);
+    }
     else if(screen==='s-question'){
-      if(room.status==='voting')showVoting();
+      if(room.status==='voting'){stopChronoSound();showVoting();}
+      // Détecter changement de question (skip)
       else if(room.current_question_id&&room.current_question_id!==state.currentQuestionId){
         state.currentQuestionId=room.current_question_id;
-        const qs=await db.get('questions',`id=eq.${room.current_question_id}`);
-        if(qs[0])document.getElementById('question-text').textContent=qs[0].text;
+        const qs=await db.get('questions','id=eq.'+room.current_question_id);
+        if(qs[0])renderQuestion(qs[0].text);
       }
     }
     else if(screen==='s-voting'){
-      const players=await db.get('players',`room_id=eq.${state.roomId}`);
-      const voted=players.filter(p=>p.has_voted).length;
-      document.getElementById('votes-progress').textContent=`${voted}/${players.length} ont voté`;
-      if(voted===players.length)showRoundResults(room);
+      const players=await db.get('players','room_id=eq.'+state.roomId);
+      const voted=players.filter(function(p){return p.has_voted;}).length;
+      document.getElementById('votes-progress').textContent=voted+'/'+players.length+' ont voté';
+      if(voted===players.length){stopChronoSound();showRoundResults(room);}
     }
     else if(screen==='s-round-results'){
-      if(room.status==='playing'&&room.current_round>state.currentRound){state.currentRound=room.current_round;await beginRound(room);}
-      else if(room.status==='finished')showPodium();
+      if(room.status==='playing'&&room.current_round>state.currentRound){
+        state.currentRound=room.current_round;await beginRound(room);
+      }
+      else if(room.status==='finished'||room.status==='mvp')showMVP();
+    }
+    else if(screen==='s-mvp'||screen==='s-podium'){
+      // rien
     }
   }catch(e){console.error('Poll:',e);}
 }
 
+// ── START GAME ────────────────────────────────────────────────────────────
 async function startGame(){
   if(!state.isHost)return;
   document.getElementById('btn-start').disabled=true;
-  const players=await db.get('players',`room_id=eq.${state.roomId}`);
+  const players=await db.get('players','room_id=eq.'+state.roomId);
   if(players.length<4){showNotif('Minimum 4 joueurs','error');return;}
   state.players=players;state.currentRound=1;
-  await db.patch('rooms',`id=eq.${state.roomId}`,{status:'playing',current_round:1});
+  await db.patch('rooms','id=eq.'+state.roomId,{status:'playing',current_round:1});
   await assignRoles(players);
 }
 
+// ── ASSIGN ROLES ──────────────────────────────────────────────────────────
 async function assignRoles(players){
-  const shuffled=[...players].sort(()=>Math.random()-.5);
+  const shuffled=[...players].sort(function(){return Math.random()-.5;});
   const liarCount=Math.min(state.liarCount,Math.floor(players.length/2));
-  for(let i=0;i<shuffled.length;i++)await db.patch('players',`id=eq.${shuffled[i].id}`,{role:i<liarCount?'lie':'truth',has_voted:false});
+  for(let i=0;i<shuffled.length;i++){
+    await db.patch('players','id=eq.'+shuffled[i].id,{role:i<liarCount?'lie':'truth',has_voted:false});
+  }
   const cat=state.category||'soft';
-  const questions=await db.get('questions',`category=eq.${cat}&limit=200`);
-  if(!questions.length){showNotif('Plus de questions !','error');return;}
-  // Récupérer les questions déjà posées dans cette partie
-  const usedRounds=await db.get('rounds',`room_id=eq.${state.roomId}`);
-  const usedIds=new Set(usedRounds.map(r=>r.question_id));
-  const pool=questions.filter(q=>!usedIds.has(q.id));
-  const finalPool=pool.length?pool:questions;
-  // Shuffle Fisher-Yates
-  for(let i=finalPool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[finalPool[i],finalPool[j]]=[finalPool[j],finalPool[i]];}
-  const q=finalPool[0];
-  const [round]=await db.post('rounds',{room_id:state.roomId,round_number:state.currentRound,question_id:q.id});
-  state.currentRoundId=round.id;
-  await db.patch('rooms',`id=eq.${state.roomId}`,{current_question_id:q.id});
-  const myPlayer=(await db.get('players',`id=eq.${state.playerId}`))[0];
+  const allQ=await db.get('questions','category=eq.'+cat+'&limit=200');
+  if(!allQ.length){showNotif('Plus de questions !','error');return;}
+  const usedRounds=await db.get('rounds','room_id=eq.'+state.roomId);
+  const usedIds=new Set(usedRounds.map(function(r){return r.question_id;}));
+  let pool=allQ.filter(function(q){return !usedIds.has(q.id);});
+  if(!pool.length)pool=allQ;
+  // Shuffle
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;}
+  const q=pool[0];
+  const rounds=await db.post('rounds',{room_id:state.roomId,round_number:state.currentRound,question_id:q.id});
+  state.currentRoundId=rounds[0].id;
+  await db.patch('rooms','id=eq.'+state.roomId,{current_question_id:q.id});
+  const myPlayer=(await db.get('players','id=eq.'+state.playerId))[0];
   showRoleReveal(myPlayer.role,q.text);
 }
 
 async function beginRound(room){
   state.currentRound=room.current_round;state.currentQuestionId=room.current_question_id;
-  const myPlayer=(await db.get('players',`id=eq.${state.playerId}`))[0];
-  const qs=await db.get('questions',`id=eq.${state.currentQuestionId}`);
-  showRoleReveal(myPlayer.role,qs[0]?.text||'');
+  const myPlayer=(await db.get('players','id=eq.'+state.playerId))[0];
+  const qs=await db.get('questions','id=eq.'+state.currentQuestionId);
+  showRoleReveal(myPlayer.role,qs[0]?qs[0].text:'');
 }
 
+// ── ROLE REVEAL ───────────────────────────────────────────────────────────
 function showRoleReveal(role,questionText){
   state.role=role;state._pendingQ=questionText;
-  document.getElementById('role-round-label').textContent=`MANCHE ${state.currentRound} / ${state.roundCount}`;
+  const rc=state.roundCount==='∞'?'∞':state.roundCount;
+  document.getElementById('role-round-label').textContent='MANCHE '+state.currentRound+' / '+rc;
   const card=document.getElementById('role-card');
-  const emoji=document.getElementById('role-emoji');
   const big=document.getElementById('role-big-text');
   const instr=document.getElementById('role-instruction');
+  document.getElementById('role-emoji').textContent=role==='lie'?'◉':'◯';
   if(role==='lie'){
-    card.className='role-card lie';emoji.textContent='◉';
-    big.className='role-big lie';big.textContent='MENTEUR';
+    card.className='role-card lie';big.className='role-big lie';big.textContent='MENTEUR';
     instr.textContent='Invente. Manipule. Sois crédible. Ne te fais pas prendre.';
   }else{
-    card.className='role-card truth';emoji.textContent='◯';
-    big.className='role-big truth';big.textContent='VÉRITÉ';
+    card.className='role-card truth';big.className='role-big truth';big.textContent='VÉRITÉ';
     instr.textContent='Réponds honnêtement. Reste naturel·le. Méfie-toi des autres.';
   }
+  // Pas de son ici — ça spoilait le rôle
   showScreen('s-role');
-  setTimeout(()=>soundRoleReveal(role==='lie'),400);
 }
 
 async function confirmRole(){
   showScreen('s-waiting-roles');
-  if(state.isHost)setTimeout(()=>showQuestion({current_question_id:state.currentQuestionId}),1000);
+  if(state.isHost)setTimeout(function(){showQuestion({current_question_id:state.currentQuestionId});},1000);
+}
+
+// ── QUESTION ──────────────────────────────────────────────────────────────
+function renderQuestion(text){
+  const upper=text.toUpperCase();
+  const words=upper.split(' ');
+  const last=words.pop();
+  const rest=words.join(' ');
+  document.getElementById('question-text').innerHTML=rest+' <span style="color:var(--red);text-shadow:0 0 12px var(--red-glow);">'+last+'</span>';
 }
 
 async function showQuestion(room){
   const qId=room.current_question_id||state.currentQuestionId;
-  const qs=await db.get('questions',`id=eq.${qId}`);
-  document.getElementById('question-text').textContent=qs[0]?.text||state._pendingQ||'...';
+  const qs=await db.get('questions','id=eq.'+qId);
+  const text=qs[0]?qs[0].text:(state._pendingQ||'...');
+  state.currentQuestionId=qId;
+  renderQuestion(text);
   const rc=state.roundCount==='∞'?'∞':state.roundCount;
-  document.getElementById('q-round-label').textContent=`Manche ${state.currentRound}/${rc}`;
-  document.getElementById('q-player-count').textContent=`${state.players.length} joueurs`;
-  document.getElementById('q-progress').style.width=rc==='∞'?'50%':`${(state.currentRound/rc)*100}%`;
+  document.getElementById('q-round-label').textContent='Manche '+state.currentRound+'/'+(rc==='∞'?'∞':rc);
+  document.getElementById('q-player-count').textContent=state.players.length+' joueurs';
+  document.getElementById('q-progress').style.width=(rc==='∞'?50:(state.currentRound/rc*100))+'%';
   document.getElementById('q-host-btn').style.display=state.isHost?'':'none';
   document.getElementById('q-guest-msg').style.display=state.isHost?'none':'';
   showScreen('s-question');
@@ -811,180 +801,193 @@ async function showQuestion(room){
 
 async function startVoting(){
   if(!state.isHost)return;
-  await db.patch('rooms',`id=eq.${state.roomId}`,{status:'voting'});
+  await db.patch('rooms','id=eq.'+state.roomId,{status:'voting'});
   showVoting();
 }
 
+// ── SKIP QUESTION ─────────────────────────────────────────────────────────
 async function skipQuestion(){
   if(!state.isHost)return;
   const cat=state.category||'soft';
-  const questions=await db.get('questions',`category=eq.${cat}&order=id&limit=100`);
-  if(!questions.length){showNotif('Plus de questions !','error');return;}
-  // Exclure la question actuelle
-  const filtered=questions.filter(q=>q.id!==state.currentQuestionId);
-  const pool=filtered.length?filtered:questions;
-  const q=pool[Math.floor(Math.random()*pool.length)];
-  const rounds=await db.get('rounds',`room_id=eq.${state.roomId}&order=round_number.desc&limit=1`);
-  await db.patch('rounds',`id=eq.${rounds[0].id}`,{question_id:q.id});
-  // Reset status à 'playing' pour que le poll des autres détecte le changement
-  await db.patch('rooms',`id=eq.${state.roomId}`,{current_question_id:q.id,status:'question_changed'});
-  await db.patch('rooms',`id=eq.${state.roomId}`,{status:'playing'});
+  const allQ=await db.get('questions','category=eq.'+cat+'&limit=200');
+  if(!allQ.length){showNotif('Plus de questions !','error');return;}
+  const usedRounds=await db.get('rounds','room_id=eq.'+state.roomId);
+  const usedIds=new Set(usedRounds.map(function(r){return r.question_id;}));
+  // Exclure aussi la question actuelle
+  usedIds.add(state.currentQuestionId);
+  let pool=allQ.filter(function(q){return !usedIds.has(q.id);});
+  if(!pool.length)pool=allQ.filter(function(q){return q.id!==state.currentQuestionId;});
+  if(!pool.length){showNotif('Plus d\'autres questions !','error');return;}
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;}
+  const q=pool[0];
+  // Mettre à jour le round ET la room
+  const rounds=await db.get('rounds','room_id=eq.'+state.roomId+'&order=round_number.desc&limit=1');
+  await db.patch('rounds','id=eq.'+rounds[0].id,{question_id:q.id});
+  await db.patch('rooms','id=eq.'+state.roomId,{current_question_id:q.id});
   state.currentQuestionId=q.id;
-  document.getElementById('question-text').textContent=q.text;
+  renderQuestion(q.text);
   showNotif('Question changée !','success');
 }
 
+// ── VOTING ────────────────────────────────────────────────────────────────
 async function showVoting(){
-  const players=await db.get('players',`room_id=eq.${state.roomId}&order=joined_at.asc`);
+  stopChronoSound();
+  const players=await db.get('players','room_id=eq.'+state.roomId+'&order=joined_at.asc');
   state.players=players;state.selectedVoteTarget=null;state.hasVoted=false;
   const rc=state.roundCount==='∞'?'∞':state.roundCount;
-  document.getElementById('v-round-label').textContent=`Manche ${state.currentRound}/${rc}`;
-  document.getElementById('v-progress').style.width=rc==='∞'?'50%':`${(state.currentRound/rc)*100}%`;
-  const others=players.filter(p=>p.id!==state.playerId);
-  document.getElementById('vote-list').innerHTML=others.map(p=>`
-    <div class="vote-item" id="vote-${p.id}" onclick="selectVote('${p.id}')">
-      ${avatarHtml(p.avatar,'40px')}
-      <span class="vote-name" style="font-size:16px;font-weight:600;flex:1;">${p.name}</span>
-      <div class="vote-check"></div>
-    </div>`).join('');
-  const voted=players.filter(p=>p.has_voted).length;
-  document.getElementById('votes-progress').textContent=`${voted}/${players.length} ont voté`;
+  document.getElementById('v-round-label').textContent='Manche '+state.currentRound+'/'+(rc==='∞'?'∞':rc);
+  document.getElementById('v-progress').style.width=(rc==='∞'?50:(state.currentRound/rc*100))+'%';
+  const others=players.filter(function(p){return p.id!==state.playerId;});
+  document.getElementById('vote-list').innerHTML=others.map(function(p){
+    return '<div class="vote-item" id="vote-'+p.id+'" onclick="selectVote(\''+p.id+'\')">'+avatarHtml(p.avatar,'40px')+'<span style="font-size:16px;font-weight:600;flex:1;">'+p.name+'</span><div class="vote-check"></div></div>';
+  }).join('');
+  const voted=players.filter(function(p){return p.has_voted;}).length;
+  document.getElementById('votes-progress').textContent=voted+'/'+players.length+' ont voté';
   document.getElementById('btn-vote').disabled=true;
   showScreen('s-voting');
+  // Démarrer le son de chrono
+  startChronoSound();
 }
 
 function selectVote(id){
   if(state.hasVoted)return;
-  document.querySelectorAll('.vote-item').forEach(el=>el.classList.remove('selected'));
-  document.getElementById('vote-'+id)?.classList.add('selected');
+  document.querySelectorAll('.vote-item').forEach(function(el){el.classList.remove('selected');});
+  const el=document.getElementById('vote-'+id);if(el)el.classList.add('selected');
   state.selectedVoteTarget=id;document.getElementById('btn-vote').disabled=false;
 }
 
 async function submitVote(){
   if(!state.selectedVoteTarget||state.hasVoted)return;
   document.getElementById('btn-vote').disabled=true;
-  const rounds=await db.get('rounds',`room_id=eq.${state.roomId}&order=round_number.desc&limit=1`);
+  const rounds=await db.get('rounds','room_id=eq.'+state.roomId+'&order=round_number.desc&limit=1');
   await db.post('votes',{round_id:rounds[0].id,voter_id:state.playerId,target_id:state.selectedVoteTarget});
-  await db.patch('players',`id=eq.${state.playerId}`,{has_voted:true});
+  await db.patch('players','id=eq.'+state.playerId,{has_voted:true});
   state.hasVoted=true;showNotif('Vote enregistré !','success');soundVoteSubmit();
-  const players=await db.get('players',`room_id=eq.${state.roomId}`);
-  if(players.every(p=>p.has_voted)){const room=(await db.get('rooms',`id=eq.${state.roomId}`))[0];showRoundResults(room);}
+  const players=await db.get('players','room_id=eq.'+state.roomId);
+  if(players.every(function(p){return p.has_voted;})){
+    stopChronoSound();
+    const room=(await db.get('rooms','id=eq.'+state.roomId))[0];
+    showRoundResults(room);
+  }
 }
 
+// ── ROUND RESULTS ─────────────────────────────────────────────────────────
 async function showRoundResults(room){
-  const players=await db.get('players',`room_id=eq.${state.roomId}&order=joined_at.asc`);
-  state.players=players;
-  const rounds=await db.get('rounds',`room_id=eq.${state.roomId}&order=round_number.desc&limit=1`);
-  const votes=await db.get('votes',`round_id=eq.${rounds[0].id}`);
-  const voteCounts={};votes.forEach(v=>{voteCounts[v.target_id]=(voteCounts[v.target_id]||0)+1;});
-  const liars=players.filter(p=>p.role==='lie');
-  const scoreUpdates={};players.forEach(p=>{scoreUpdates[p.id]=0;});
-  for(const liar of liars){const accused=voteCounts[liar.id]||0;if(accused<Math.ceil(players.length/2))scoreUpdates[liar.id]+=2;}
-  votes.forEach(v=>{const t=players.find(p=>p.id===v.target_id);if(t?.role==='lie')scoreUpdates[v.voter_id]=(scoreUpdates[v.voter_id]||0)+1;});
-  for(const p of players)if(scoreUpdates[p.id])await db.patch('players',`id=eq.${p.id}`,{score:(p.score||0)+scoreUpdates[p.id]});
+  stopChronoSound();
   soundRevealResults();
+  const players=await db.get('players','room_id=eq.'+state.roomId+'&order=joined_at.asc');
+  state.players=players;
+  const rounds=await db.get('rounds','room_id=eq.'+state.roomId+'&order=round_number.desc&limit=1');
+  const votes=await db.get('votes','round_id=eq.'+rounds[0].id);
+  const voteCounts={};votes.forEach(function(v){voteCounts[v.target_id]=(voteCounts[v.target_id]||0)+1;});
+  const liars=players.filter(function(p){return p.role==='lie';});
+  const scoreUpdates={};players.forEach(function(p){scoreUpdates[p.id]=0;});
+  liars.forEach(function(liar){if((voteCounts[liar.id]||0)<Math.ceil(players.length/2))scoreUpdates[liar.id]+=2;});
+  votes.forEach(function(v){const t=players.find(function(p){return p.id===v.target_id;});if(t&&t.role==='lie')scoreUpdates[v.voter_id]=(scoreUpdates[v.voter_id]||0)+1;});
+  for(const p of players)if(scoreUpdates[p.id])await db.patch('players','id=eq.'+p.id,{score:(p.score||0)+scoreUpdates[p.id]});
+
   const rc=state.roundCount==='∞'?'∞':state.roundCount;
-  document.getElementById('rr-round-label').textContent=`Résultats · Manche ${state.currentRound}`;
-  document.getElementById('rr-progress').style.width=rc==='∞'?'50%':`${(state.currentRound/rc)*100}%`;
+  document.getElementById('rr-round-label').textContent='Résultats · Manche '+state.currentRound;
+  document.getElementById('rr-progress').style.width=(rc==='∞'?50:(state.currentRound/rc*100))+'%';
   const mainLiar=liars[0]||players[0];
-  const liarAvatar=mainLiar.avatar||AVATARS[0];
-  document.getElementById('rr-liar-avatar').innerHTML=`<img src="${liarAvatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-  document.getElementById('rr-liar-name').textContent=liars.length>1?liars.map(l=>l.name).join(' & '):mainLiar.name;
+  document.getElementById('rr-liar-avatar').innerHTML=avatarHtml(mainLiar.avatar,'160px');
+  document.getElementById('rr-liar-name').textContent=liars.length>1?liars.map(function(l){return l.name;}).join(' & '):mainLiar.name;
   document.getElementById('rr-role-text').textContent=liars.length>1?'MENTEURS':'MENTEUR';
-  // votes-row supprimé
-  document.getElementById('rr-all-players').innerHTML=players.map(p=>`
-    <div class="player-item" style="${p.role==='lie'?'border-color:var(--red);background:rgba(255,59,59,.07);':''}">
-      <div class="p-avatar">${avatarHtml(p.avatar,'44px')}</div>
-      <span class="p-name">${p.name}</span>
-      <span style="font-size:12px;color:var(--grey);margin-right:8px;">${voteCounts[p.id]||0} vote${(voteCounts[p.id]||0)>1?'s':''}</span>
-      <span class="role-pill ${p.role==='lie'?'lie':'truth'}">${p.role==='lie'?'MENTEUR':'VÉRITÉ'}</span>
-    </div>`).join('');
+  document.getElementById('rr-all-players').innerHTML=players.map(function(p){
+    const isLiar=p.role==='lie';
+    return '<div class="player-item" style="'+(isLiar?'border-color:var(--red);background:rgba(255,59,59,.07);':'')+'"><div class="p-avatar">'+avatarHtml(p.avatar,'44px')+'</div><span class="p-name">'+p.name+'</span><span style="font-size:12px;color:var(--grey);margin-right:8px;">'+(voteCounts[p.id]||0)+' vote'+((voteCounts[p.id]||0)>1?'s':'')+'</span><span class="role-pill '+(isLiar?'lie':'truth')+'">'+(isLiar?'MENTEUR':'VÉRITÉ')+'</span></div>';
+  }).join('');
+
   const isLast=state.roundCount!=='∞'&&state.currentRound>=state.roundCount;
   document.getElementById('rr-host-btn').style.display=state.isHost?'':'none';
   document.getElementById('rr-guest-wait').style.display=state.isHost?'none':'';
   const btn=document.getElementById('btn-next-round');
-  if(btn){btn.textContent=isLast?'Voir le classement →':'Manche suivante →';btn.onclick=isLast?showPodiumInit:nextRound;}
+  if(btn){
+    btn.textContent=isLast?'Voir le classement →':'Manche suivante →';
+    btn.onclick=isLast?triggerEndGame:nextRound;
+  }
   showScreen('s-round-results');
 }
 
+// ── NEXT ROUND ────────────────────────────────────────────────────────────
 async function nextRound(){
   if(!state.isHost)return;
   state.currentRound++;
-  const players=await db.get('players',`room_id=eq.${state.roomId}`);
-  for(const p of players)await db.patch('players',`id=eq.${p.id}`,{has_voted:false});
-  await db.patch('rooms',`id=eq.${state.roomId}`,{status:'playing',current_round:state.currentRound});
+  const players=await db.get('players','room_id=eq.'+state.roomId);
+  for(const p of players)await db.patch('players','id=eq.'+p.id,{has_voted:false});
+  await db.patch('rooms','id=eq.'+state.roomId,{status:'playing',current_round:state.currentRound});
   state.players=players;await assignRoles(players);
 }
 
-async function showMVP(sorted){
-  const mvp=sorted[0];
+// ── END GAME → MVP pour TOUS ─────────────────────────────────────────────
+async function triggerEndGame(){
+  if(!state.isHost)return;
+  // Marquer finished pour que le poll des autres déclenche showMVP
+  await db.patch('rooms','id=eq.'+state.roomId,{status:'finished'});
+  showMVPScreen();
+}
+
+async function showMVP(){
+  // Appelé par le poll pour les non-host
+  const players=await db.get('players','room_id=eq.'+state.roomId+'&order=score.desc');
+  state.sortedPlayers=[...players].sort(function(a,b){return b.score-a.score;});
+  showSuspense(function(){showMVPScreen();},'RÉSULTATS FINAUX',2500);
+}
+
+async function showMVPScreen(){
+  if(!state.sortedPlayers){
+    const players=await db.get('players','room_id=eq.'+state.roomId+'&order=score.desc');
+    state.sortedPlayers=[...players].sort(function(a,b){return b.score-a.score;});
+  }
+  const mvp=state.sortedPlayers[0];
   document.getElementById('mvp-avatar').src=mvp.avatar||AVATARS[0];
   document.getElementById('mvp-name').textContent=mvp.name.toUpperCase();
   // Particules
-  const container=document.getElementById('mvp-particles');
-  container.innerHTML='';
-  for(let i=0;i<12;i++){
-    const p=document.createElement('div');
-    p.className='particle';
-    p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*.5}s;animation-duration:${.6+Math.random()*.4}s;`;
+  const container=document.getElementById('mvp-particles');container.innerHTML='';
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='particle';
+    p.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;animation-delay:'+Math.random()*.6+'s;animation-duration:'+(0.6+Math.random()*.5)+'s;';
     container.appendChild(p);
   }
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('s-mvp').classList.add('active');
-  setTimeout(soundMVP, 500);
-}
-
-async function showPodiumInit(){
-  if(state.isHost)await db.patch('rooms',`id=eq.${state.roomId}`,{status:'finished'});
-  const players=await db.get('players',`room_id=eq.${state.roomId}&order=score.desc`);
-  const sorted=[...players].sort((a,b)=>b.score-a.score);
-  // Montrer MVP d'abord avec suspense
-  showSuspense(async()=>{ await showMVP(sorted); },'RÉSULTATS FINAUX',2500);
-  state._sortedPlayers=sorted;
-  return; // le reste dans showPodiumFinal
+  showScreen('s-mvp');
+  setTimeout(soundMVP,500);
 }
 
 async function showPodium(){
-  const sorted=state._sortedPlayers||(await db.get('players',`room_id=eq.${state.roomId}&order=score.desc`)).sort((a,b)=>b.score-a.score);
+  if(!state.sortedPlayers){
+    const players=await db.get('players','room_id=eq.'+state.roomId+'&order=score.desc');
+    state.sortedPlayers=[...players].sort(function(a,b){return b.score-a.score;});
+  }
+  const sorted=state.sortedPlayers;
   const top3=sorted.slice(0,3);
   const display=top3.length===3?[top3[1],top3[0],top3[2]]:top3.length===2?[top3[1],top3[0]]:[top3[0]];
   const heights=[80,120,60];const medals=['🥈','🥇','🥉'];
-  document.getElementById('podium-display').innerHTML=display.map((p,i)=>p?`
-    <div class="podium-col">
-      <div style="font-size:32px;">${avatarHtml(p.avatar,'40px')}</div>
-      <div style="font-size:12px;font-weight:600;text-align:center;">${p.name}</div>
-      <div class="podium-bar ${i===1?'first':''}" style="height:${heights[i]}px;"></div>
-      <div style="font-size:22px;">${medals[i]}</div>
-    </div>`:'').join('');
-  // Si on vient du bouton MVP, reconstruire à partir de l'état
-  document.getElementById('full-ranking').innerHTML=sorted.map((p,i)=>`
-    <div class="player-item">
-      <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${i===0?'var(--red)':'var(--grey2)'};width:28px;text-align:center;">${i+1}</span>
-      <div class="p-avatar">${avatarHtml(p.avatar,'44px')}</div>
-      <span class="p-name">${p.name}</span>
-      <span style="font-size:13px;color:var(--grey);font-weight:600;">${p.score} pts</span>
-    </div>`).join('');
+  document.getElementById('podium-display').innerHTML=display.map(function(p,i){
+    if(!p)return '';
+    return '<div class="podium-col"><div style="font-size:32px;">'+avatarHtml(p.avatar,'40px')+'</div><div style="font-size:12px;font-weight:600;text-align:center;">'+p.name+'</div><div class="podium-bar '+(i===1?'first':'')+'" style="height:'+heights[i]+'px;"></div><div style="font-size:22px;">'+medals[i]+'</div></div>';
+  }).join('');
+  document.getElementById('full-ranking').innerHTML=sorted.map(function(p,i){
+    return '<div class="player-item"><span style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:'+(i===0?'var(--red)':'var(--grey2)')+';width:28px;text-align:center;">'+(i+1)+'</span><div class="p-avatar">'+avatarHtml(p.avatar,'44px')+'</div><span class="p-name">'+p.name+'</span><span style="font-size:13px;color:var(--grey);font-weight:600;">'+p.score+' pts</span></div>';
+  }).join('');
   showScreen('s-podium');
 }
 
+// ── GO HOME ───────────────────────────────────────────────────────────────
 function goHome(){
-  if(pollTimer)clearInterval(pollTimer);
-  state={roomId:null,roomCode:null,playerId:null,playerName:null,isHost:false,role:null,currentRound:0,roundCount:5,liarCount:1,category:'soft',currentQuestionId:null,selectedVoteTarget:null,players:[],hasVoted:false,createAvatar:AVATARS[0],joinAvatar:AVATARS[0]};
+  if(pollTimer)clearInterval(pollTimer);stopChronoSound();
+  state={roomId:null,roomCode:null,playerId:null,isHost:false,role:null,currentRound:0,roundCount:5,liarCount:1,category:'soft',currentQuestionId:null,selectedVoteTarget:null,players:[],hasVoted:false,createAvatar:AVATARS[0],joinAvatar:AVATARS[0],sortedPlayers:null};
   showScreen('s-home');
 }
 
-window.addEventListener('load',()=>{
+// ── INIT ──────────────────────────────────────────────────────────────────
+window.addEventListener('load',function(){
   renderAvatarGrid('create-avatar-grid','createAvatar');
   renderAvatarGrid('join-avatar-grid','joinAvatar');
-  setTimeout(()=>{
+  setTimeout(function(){
     setLoading(false);
-    // Auto-fill code si lien d'invitation
     const params=new URLSearchParams(window.location.search);
     const code=params.get('code');
-    if(code){
-      document.getElementById('join-code').value=code;
-      showScreen('s-join');
-    }
+    if(code){document.getElementById('join-code').value=code;showScreen('s-join');}
   },900);
   if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
 });
