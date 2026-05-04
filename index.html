@@ -326,7 +326,7 @@ input::placeholder { color:var(--grey2); font-weight:400; }
   padding:24px 24px 48px;
   transform:translateY(100%);
   transition:transform 0.4s cubic-bezier(0.34,1.2,0.64,1);
-  max-height:85vh; overflow-y:auto;
+  max-height:80vh; min-height:60vh; overflow-y:auto;
 }
 .modal-overlay.open .modal-sheet { transform:translateY(0); }
 .modal-handle {
@@ -343,10 +343,11 @@ input::placeholder { color:var(--grey2); font-weight:400; }
 }
 .rules-cards::-webkit-scrollbar { display:none; }
 .rule-card {
-  min-width:240px; padding:24px;
+  min-width:240px; max-width:260px; padding:24px;
   background:var(--bg2); border-radius:var(--radius);
   border:1px solid var(--bg3);
   scroll-snap-align:start; flex-shrink:0;
+  min-height:180px;
 }
 .rule-card-num {
   font-family:'Bebas Neue', sans-serif;
@@ -364,22 +365,26 @@ input::placeholder { color:var(--grey2); font-weight:400; }
    AVATAR PICKER
 ══════════════════════════ */
 .avatar-grid {
-  display:grid; grid-template-columns:repeat(5, 1fr); gap:10px;
+  display:grid; grid-template-columns:repeat(5, 1fr); gap:8px;
   width:100%;
 }
 .avatar-opt {
   aspect-ratio:1; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  font-size:28px;
-  border:2.5px solid var(--bg3);
+  font-size:22px;
+  border:2px solid var(--bg3);
   cursor:pointer; transition:all 0.2s;
   background:var(--bg2);
+  overflow:hidden;
+}
+.avatar-opt img {
+  width:100%; height:100%; object-fit:cover; border-radius:50%;
 }
 .avatar-opt.selected {
   border-color:var(--red);
-  box-shadow:0 0 16px var(--red-glow);
+  box-shadow:0 0 12px var(--red-glow);
   background:rgba(255,59,59,0.1);
-  transform:scale(1.08);
+  transform:scale(1.06);
 }
 
 /* ══════════════════════════
@@ -662,10 +667,12 @@ input::placeholder { color:var(--grey2); font-weight:400; }
    STICKY BOTTOM
 ══════════════════════════ */
 .sticky-bottom {
-  position:sticky; bottom:0; width:100%;
+  position:fixed; bottom:0; left:0; right:0;
   padding:16px 20px 40px;
-  background:linear-gradient(to top, var(--black) 60%, transparent);
-  z-index:5;
+  background:linear-gradient(to top, var(--black) 80%, transparent);
+  z-index:50;
+  max-width:480px;
+  margin:0 auto;
 }
 </style>
 </head>
@@ -690,7 +697,7 @@ input::placeholder { color:var(--grey2); font-weight:400; }
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:20px;">LES RÈGLES</div>
-    <div class="rules-cards">
+    <div class="rules-cards" style="padding:4px 4px 12px;">
       <div class="rule-card">
         <div class="rule-card-num">01</div>
         <div class="rule-card-title">Les rôles secrets</div>
@@ -742,7 +749,36 @@ input::placeholder { color:var(--grey2); font-weight:400; }
   <div class="home-hero">
     <div class="mask-container">
       <div class="mask-glow"></div>
-      <img src="/masque.png" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+        <defs>
+          <clipPath id="lhalf"><rect x="0" y="0" width="100" height="200"/></clipPath>
+          <clipPath id="rhalf"><rect x="100" y="0" width="100" height="200"/></clipPath>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Left half - white -->
+        <g clip-path="url(#lhalf)">
+          <ellipse cx="100" cy="95" rx="72" ry="85" fill="#FFFFFF"/>
+          <ellipse cx="72" cy="82" rx="10" ry="13" fill="#0A0A0A"/>
+          <ellipse cx="72" cy="82" rx="4" ry="5" fill="#fff"/>
+          <path d="M 60 125 Q 100 148 100 136" stroke="#0A0A0A" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="58" cy="70" rx="8" ry="4" fill="rgba(0,0,0,0.1)" transform="rotate(-15 58 70)"/>
+        </g>
+        <!-- Right half - red/dark -->
+        <g clip-path="url(#rhalf)">
+          <ellipse cx="100" cy="95" rx="72" ry="85" fill="#1A0A0A"/>
+          <ellipse cx="128" cy="82" rx="10" ry="13" fill="#FF3B3B" filter="url(#glow)"/>
+          <ellipse cx="128" cy="82" rx="4" ry="5" fill="#8B0000"/>
+          <path d="M 100 136 Q 140 120 138 132" stroke="#FF3B3B" stroke-width="5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
+          <ellipse cx="142" cy="70" rx="8" ry="4" fill="rgba(255,59,59,0.2)" transform="rotate(15 142 70)"/>
+        </g>
+        <!-- Center line -->
+        <line x1="100" y1="15" x2="100" y2="178" stroke="#0A0A0A" stroke-width="3"/>
+        <!-- Glow on red side -->
+        <ellipse cx="148" cy="95" rx="30" ry="50" fill="rgba(255,59,59,0.05)"/>
+      </svg>
     </div>
 
     <div class="t-hero">MITO</div>
@@ -757,13 +793,29 @@ input::placeholder { color:var(--grey2); font-weight:400; }
   </div>
 
   <div class="gap-24"></div>
+
+  <div class="home-features">
+    <div class="home-feature">
+      <div class="home-feature-icon">👥</div>
+      <div class="home-feature-label">Entre<br>amis</div>
+    </div>
+    <div class="home-feature">
+      <div class="home-feature-icon">⚡</div>
+      <div class="home-feature-label">Facile<br>à jouer</div>
+    </div>
+    <div class="home-feature">
+      <div class="home-feature-icon">❓</div>
+      <div class="home-feature-label">Centaines<br>de questions</div>
+    </div>
+  </div>
+  <div class="gap-40"></div>
 </div>
 
 <!-- ══════════════════════════════════════════
      SCREEN : CREATE GAME
 ══════════════════════════════════════════ -->
 <div class="screen" id="s-create">
-  <div class="top-bar" style="background:var(--black);">
+  <div class="top-bar" style="background:var(--black);position:relative;flex-shrink:0;">
     <button class="top-bar-icon" onclick="showScreen('s-home')">←</button>
     <div class="top-bar-center" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">NOUVELLE PARTIE</div>
     <div style="width:36px;"></div>
@@ -831,7 +883,7 @@ input::placeholder { color:var(--grey2); font-weight:400; }
         </div>
       </div>
     </div>
-    <div class="gap-40"></div>
+    <div style="height:120px;flex-shrink:0;"></div>
   </div>
   <div class="sticky-bottom">
     <button class="btn btn-red" id="btn-create" onclick="createGame()">Créer la partie</button>
@@ -841,13 +893,13 @@ input::placeholder { color:var(--grey2); font-weight:400; }
 <!-- ══════════════════════════════════════════
      SCREEN : JOIN GAME
 ══════════════════════════════════════════ -->
-<div class="screen" id="s-join">
+<div class="screen" id="s-join" style="overflow-y:auto;justify-content:flex-start;">
   <div class="top-bar" style="background:var(--black);">
     <button class="top-bar-icon" onclick="showScreen('s-home')">←</button>
     <div class="top-bar-center" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">REJOINDRE</div>
     <div style="width:36px;"></div>
   </div>
-  <div class="scroll-content" style="padding-top:0;">
+  <div class="scroll-content" style="padding-top:0;padding-bottom:120px;">
     <div class="gap-8"></div>
     <div class="t-xs w100">Ton avatar</div>
     <div class="gap-12"></div>
@@ -958,11 +1010,9 @@ input::placeholder { color:var(--grey2); font-weight:400; }
       </div>
     </div>
     <div class="question-bottom">
-     <div id="q-host-btn" style="display:none;">
-  <button class="btn btn-red" onclick="startVoting()">Passer au vote</button>
-  <div class="gap-12"></div>
-  <button class="btn btn-outline" onclick="skipQuestion()">Passer la question</button>
-</div>
+      <div id="q-host-btn" style="display:none;">
+        <button class="btn btn-red" onclick="startVoting()">Passer au vote</button>
+      </div>
       <div id="q-guest-msg" style="text-align:center;">
         <div class="t-sm">Répondez à voix haute, dans l'ordre.</div>
         <div class="gap-8"></div>
@@ -1105,16 +1155,27 @@ const db = {
 // ══════════════════════════════════════════
 // AVATARS
 // ══════════════════════════════════════════
-const AVATARS = ['/avatars/av1.png','/avatars/av2.png','/avatars/av3.png','/avatars/av4.png','/avatars/av5.png','/avatars/a6.png','/avatars/av7.png','/avatars/av8.png','/avatars/av9.png','/avatars/av10.png',];
+const AVATARS = ['😎','🦊','🐺','🦁','🐯','🦅','🐻','🦋','🐸','🦄','🎭','👻','🤖','👽','🧠','🐲','🦈','🐙','🦉','🦇'];
+
+
+function avatarHtml(avatar, size='36px', fontSize='22px') {
+  const a = avatar || '😎';
+  if (a.startsWith('/')) {
+    return `<img src="${a}" style="width:${size};height:${size};border-radius:50%;object-fit:cover;flex-shrink:0;">`;
+  }
+  return `<span style="font-size:${fontSize};width:${size};height:${size};display:flex;align-items:center;justify-content:center;flex-shrink:0;">${a}</span>`;
+}
 
 function renderAvatarGrid(gridId, stateKey) {
   const grid = document.getElementById(gridId);
-  grid.innerHTML = AVATARS.map((a, i) => `
-    <div class="avatar-opt ${state[stateKey] === a ? 'selected' : ''}"
-      onclick="selectAvatar('${gridId}','${stateKey}','${a}')">
-      ${a}
-    </div>
-  `).join('');
+  grid.innerHTML = AVATARS.map((a) => {
+    const isImg = a.startsWith('/');
+    const inner = isImg
+      ? `<img src="${a}" alt="avatar">`
+      : a;
+    return `<div class="avatar-opt ${state[stateKey] === a ? 'selected' : ''}"
+      onclick="selectAvatar('${gridId}','${stateKey}','${a}')">${inner}</div>`;
+  }).join('');
 }
 
 function selectAvatar(gridId, stateKey, avatar) {
@@ -1286,7 +1347,7 @@ async function refreshLobby() {
   document.getElementById('player-count').textContent = players.length;
   document.getElementById('player-list').innerHTML = players.map(p=>`
     <div class="player-item">
-      <div class="p-avatar"><img src="${p.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+      ${avatarHtml(p.avatar, "44px", "26px")}
       <span class="p-name">${p.name}</span>
       ${p.is_host ? '<span class="p-host-badge">HOST</span>' : ''}
     </div>
@@ -1445,7 +1506,7 @@ async function showVoting() {
   const others = players.filter(p=>p.id!==state.playerId);
   document.getElementById('vote-list').innerHTML = others.map(p=>`
     <div class="vote-item" id="vote-${p.id}" onclick="selectVote('${p.id}')">
-      <div class="vote-avatar"><img src="${p.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+      ${avatarHtml(p.avatar, "40px", "26px")}
       <span class="vote-name">${p.name}</span>
       <div class="vote-check"></div>
     </div>
@@ -1521,7 +1582,7 @@ async function showRoundResults(room) {
     const vCount = voteCounts[p.id]||0;
     const isLiar = p.role==='lie';
     return `<div class="vote-count-item">
-      <div class="vote-count-avatar ${isLiar?'accused':''}"><img src="${p.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+      <div class="vote-count-avatar ${isLiar?'accused':''}" style="overflow:hidden;">${avatarHtml(p.avatar, "52px", "28px")}</div>
       <div class="vote-count-num ${isLiar?'red':''}">${vCount}</div>
     </div>`;
   }).join('');
@@ -1529,7 +1590,7 @@ async function showRoundResults(room) {
   // All players
   document.getElementById('rr-all-players').innerHTML = players.map(p=>`
     <div class="result-player-row ${p.role==='lie'?'liar':''}">
-      <div style="font-size:26px;"><img src="${p.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+      ${avatarHtml(p.avatar, "36px", "26px")}
       <span style="flex:1;font-size:15px;font-weight:600;">${p.name}</span>
       <span style="font-size:13px;color:var(--grey);margin-right:10px;">${voteCounts[p.id]||0} vote${(voteCounts[p.id]||0)>1?'s':''}</span>
       <span class="role-pill ${p.role==='lie'?'lie':'truth'}">${p.role==='lie'?'MENTEUR':'VÉRITÉ'}</span>
@@ -1573,7 +1634,7 @@ async function showPodium() {
   const medals = ['🥈','🥇','🥉'];
   podEl.innerHTML = display.map((p,i)=>p?`
     <div class="podium-col">
-      <div class="podium-avatar"><img src="${p.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+      <div class="podium-avatar">${avatarHtml(p.avatar, "40px", "28px")}</div>
       <div class="podium-name">${p.name}</div>
       <div class="podium-bar ${i===1?'first':''}" style="height:${heights[i]}px;"></div>
       <div class="podium-medal">${medals[i]}</div>
@@ -1583,7 +1644,7 @@ async function showPodium() {
   document.getElementById('full-ranking').innerHTML = sorted.map((p,i)=>`
     <div class="player-item">
       <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${i===0?'var(--red)':'var(--grey2)'};width:28px;text-align:center;">${i+1}</span>
-      <div class="p-avatar"><img src="${p.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+      ${avatarHtml(p.avatar, "44px", "26px")}
       <span class="p-name">${p.name}</span>
       <span style="font-size:13px;color:var(--grey);font-weight:600;">${p.score} pts</span>
     </div>
