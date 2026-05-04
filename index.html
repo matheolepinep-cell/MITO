@@ -519,14 +519,17 @@ function soundMVP(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,
 let chronoInterval=null;
 function startChronoSound(){
   stopChronoSound();
-  let tick=0;
-  chronoInterval=setInterval(()=>{
-    tick++;
-    // Accélère et monte en fréquence avec le temps
-    const freq=300+tick*8;
-    const vol=Math.min(.15+tick*.005,.3);
-    playTone(Math.min(freq,800),.05,'square',vol);
-  },1000);
+  let isTic=true;
+  chronoInterval=setInterval(function(){
+    if(isTic){
+      // TIC - aigu
+      playTone(1200,.04,'square',.18);
+    } else {
+      // TAC - légèrement plus grave et doux
+      playTone(900,.04,'square',.13);
+    }
+    isTic=!isTic;
+  },600);
 }
 function stopChronoSound(){if(chronoInterval){clearInterval(chronoInterval);chronoInterval=null;}}
 
