@@ -524,7 +524,12 @@ async function createGame(){
   if(!name){showNotif('Entre ton pseudo','error');return;}
   const btn=document.getElementById('btn-create');btn.disabled=true;
   try{
-    const code=String(Math.floor(1000+Math.random()*9000));
+    let code, codeExists = true;
+while(codeExists) {
+  code = String(Math.floor(1000 + Math.random() * 9000));
+  const existing = await db.get('rooms', `code=eq.${code}&status=eq.lobby`);
+  codeExists = existing.length > 0;
+}
     const playerId=crypto.randomUUID();
     const [room]=await db.post('rooms',{code,host_id:playerId,round_count:cfgRounds==='∞'?999:cfgRounds,liar_count:cfgLiars,status:'lobby',current_round:0,category:selectedCat});
     await db.post('players',{id:playerId,room_id:room.id,name,is_host:true,score:0,has_voted:false,avatar:state.createAvatar});
