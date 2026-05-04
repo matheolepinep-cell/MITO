@@ -372,18 +372,19 @@ input::placeholder { color:var(--grey2); font-weight:400; }
   aspect-ratio:1; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   font-size:22px;
-  border:2px solid var(--bg3);
+  border:2.5px solid transparent;
   cursor:pointer; transition:all 0.2s;
   background:#FFFFFF;
   overflow:hidden;
   width:100%;
+  box-shadow:none;
 }
 .avatar-opt img {
   width:100%; height:100%; object-fit:cover;
 }
 .avatar-opt.selected {
   border-color:var(--red);
-  box-shadow:0 0 12px var(--red-glow);
+  box-shadow:0 0 0 3px var(--red), 0 0 16px var(--red-glow);
   transform:scale(1.06);
 }
 
@@ -544,7 +545,7 @@ input::placeholder { color:var(--grey2); font-weight:400; }
   display:flex; align-items:center; gap:14px;
   padding:14px 16px; background:var(--bg2);
   border-radius:var(--radius-sm);
-  border:2px solid var(--bg3);
+  border:2.5px solid transparent;
   cursor:pointer; transition:all 0.2s;
 }
 .vote-item.selected {
@@ -603,7 +604,7 @@ input::placeholder { color:var(--grey2); font-weight:400; }
 .vote-count-avatar {
   font-size:32px; width:52px; height:52px;
   border-radius:50%; background:var(--bg2);
-  border:2px solid var(--bg3);
+  border:2.5px solid transparent;
   display:flex; align-items:center; justify-content:center;
 }
 .vote-count-avatar.accused {
@@ -750,39 +751,9 @@ input::placeholder { color:var(--grey2); font-weight:400; }
   <div class="home-hero">
     <div class="mask-container">
       <div class="mask-glow"></div>
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
-        <defs>
-          <clipPath id="lhalf"><rect x="0" y="0" width="100" height="200"/></clipPath>
-          <clipPath id="rhalf"><rect x="100" y="0" width="100" height="200"/></clipPath>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <!-- Left half - white -->
-        <g clip-path="url(#lhalf)">
-          <ellipse cx="100" cy="95" rx="72" ry="85" fill="#FFFFFF"/>
-          <ellipse cx="72" cy="82" rx="10" ry="13" fill="#0A0A0A"/>
-          <ellipse cx="72" cy="82" rx="4" ry="5" fill="#fff"/>
-          <path d="M 60 125 Q 100 148 100 136" stroke="#0A0A0A" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <ellipse cx="58" cy="70" rx="8" ry="4" fill="rgba(0,0,0,0.1)" transform="rotate(-15 58 70)"/>
-        </g>
-        <!-- Right half - red/dark -->
-        <g clip-path="url(#rhalf)">
-          <ellipse cx="100" cy="95" rx="72" ry="85" fill="#1A0A0A"/>
-          <ellipse cx="128" cy="82" rx="10" ry="13" fill="#FF3B3B" filter="url(#glow)"/>
-          <ellipse cx="128" cy="82" rx="4" ry="5" fill="#8B0000"/>
-          <path d="M 100 136 Q 140 120 138 132" stroke="#FF3B3B" stroke-width="5" fill="none" stroke-linecap="round" filter="url(#glow)"/>
-          <ellipse cx="142" cy="70" rx="8" ry="4" fill="rgba(255,59,59,0.2)" transform="rotate(15 142 70)"/>
-        </g>
-        <!-- Center line -->
-        <line x1="100" y1="15" x2="100" y2="178" stroke="#0A0A0A" stroke-width="3"/>
-        <!-- Glow on red side -->
-        <ellipse cx="148" cy="95" rx="30" ry="50" fill="rgba(255,59,59,0.05)"/>
-      </svg>
+      <img src="/masque.png" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
     </div>
 
-    <div class="t-hero">MITO</div>
     <div class="gap-8"></div>
     <div class="home-tagline">Tout le monde parle.</div>
     <div style="font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:32px;text-shadow:0 0 12px var(--red-glow);">Quelqu'un ment.</div>
@@ -870,7 +841,7 @@ input::placeholder { color:var(--grey2); font-weight:400; }
         </div>
       </div>
     </div>
-  <div style="padding:0 20px 48px;">
+  <div style="padding:16px 20px 48px;">
     <button class="btn btn-red" id="btn-create" onclick="createGame()">Créer la partie</button>
   </div>
 </div>
@@ -1177,8 +1148,8 @@ let state = {
   createAvatar: AVATARS[0], joinAvatar: AVATARS[0]
 };
 let pollTimer = null;
-let cfgRounds = 5, cfgLiars = 1, cfgRoundsIdx = 1;
-const ROUNDS_OPT = [3,5,7];
+let cfgRounds = 5, cfgLiars = 1, cfgRoundsIdx = 3;
+const ROUNDS_OPT = [2,3,4,5,6,7,8,9,10,'∞'];
 let selectedCat = 'soft';
 
 // ══════════════════════════════════════════
@@ -1244,7 +1215,7 @@ function selectCat(cat) {
 // CONFIG STEPPERS
 // ══════════════════════════════════════════
 function changeRounds(dir) {
-  cfgRoundsIdx = Math.max(0, Math.min(2, cfgRoundsIdx + dir));
+  cfgRoundsIdx = Math.max(0, Math.min(ROUNDS_OPT.length - 1, cfgRoundsIdx + dir));
   cfgRounds = ROUNDS_OPT[cfgRoundsIdx];
   document.getElementById('rounds-val').textContent = cfgRounds;
 }
@@ -1580,7 +1551,7 @@ async function showRoundResults(room) {
     </div>
   `).join('');
 
-  const isLast = state.currentRound >= state.roundCount;
+  const isLast = state.roundCount !== '∞' && state.currentRound >= state.roundCount;
   document.getElementById('rr-host-btn').style.display = state.isHost ? '' : 'none';
   document.getElementById('rr-guest-wait').style.display = state.isHost ? 'none' : '';
   const btn = document.getElementById('btn-next-round');
