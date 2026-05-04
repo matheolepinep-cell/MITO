@@ -4,563 +4,1075 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MITO</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MITO">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0F0F0F;
-    --bg2: #1A1A1A;
-    --bg3: #2A2A2A;
-    --red: #FF3B3B;
-    --red-dim: rgba(255,59,59,0.15);
-    --red-glow: rgba(255,59,59,0.25);
-    --white: #EAEAEA;
-    --grey: #888;
-    --grey2: #555;
-    --radius: 18px;
-    --radius-sm: 10px;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html, body {
-    height:100%; width:100%; overflow:hidden;
-    background:var(--bg); color:var(--white);
-    font-family:'Inter',sans-serif;
-    touch-action:manipulation;
-  }
+:root {
+  --black: #000000;
+  --bg: #0A0A0A;
+  --bg2: #141414;
+  --bg3: #1E1E1E;
+  --bg4: #2A2A2A;
+  --red: #FF3B3B;
+  --red2: #CC2020;
+  --red-glow: rgba(255,59,59,0.35);
+  --red-glow-sm: rgba(255,59,59,0.15);
+  --white: #FFFFFF;
+  --grey: #B0B0B0;
+  --grey2: #666666;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
+}
 
-  /* ── SCREENS ── */
-  .screen {
-    position:absolute; inset:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    padding:32px 24px;
-    opacity:0; pointer-events:none;
-    transition:opacity 0.35s ease, transform 0.35s ease;
-    transform:translateY(12px);
-    overflow-y:auto;
-  }
-  .screen.active {
-    opacity:1; pointer-events:all; transform:translateY(0);
-  }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-  /* ── TYPOGRAPHY ── */
-  .title-xl {
-    font-family:'Sora',sans-serif;
-    font-size:clamp(52px,18vw,80px);
-    font-weight:800;
-    letter-spacing:-2px;
-    line-height:1;
-  }
-  .title-lg {
-    font-family:'Sora',sans-serif;
-    font-size:clamp(26px,8vw,36px);
-    font-weight:700;
-    letter-spacing:-0.5px;
-  }
-  .title-md {
-    font-family:'Sora',sans-serif;
-    font-size:clamp(18px,5vw,22px);
-    font-weight:600;
-  }
-  .body { font-size:15px; font-weight:400; color:var(--grey); line-height:1.6; }
-  .body-sm { font-size:13px; color:var(--grey); }
-  .label { font-size:11px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--grey2); }
+html, body {
+  height:100%; width:100%; overflow:hidden;
+  background:var(--black);
+  color:var(--white);
+  font-family:'Inter', sans-serif;
+  touch-action:manipulation;
+}
 
-  /* ── BUTTONS ── */
-  .btn {
-    width:100%; padding:18px 24px;
-    border:none; border-radius:var(--radius);
-    font-family:'Sora',sans-serif; font-size:16px; font-weight:600;
-    cursor:pointer; transition:all 0.2s ease;
-    letter-spacing:0.3px;
-  }
-  .btn:active { transform:scale(0.97); }
-  .btn-primary {
-    background:var(--red); color:#fff;
-    box-shadow:0 0 30px var(--red-glow);
-  }
-  .btn-primary:active { box-shadow:0 0 15px var(--red-glow); }
-  .btn-secondary {
-    background:var(--bg3); color:var(--white);
-    border:1px solid var(--bg3);
-  }
-  .btn-ghost {
-    background:transparent; color:var(--grey);
-    border:1px solid var(--bg3);
-  }
-  .btn-outline-red {
-    background:transparent; color:var(--red);
-    border:1px solid var(--red);
-  }
-  .btn:disabled { opacity:0.35; pointer-events:none; }
+/* ── SCREENS ── */
+.screen {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center;
+  padding:0;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.3s ease, transform 0.3s ease;
+  transform:translateY(16px);
+  overflow-y:auto; overflow-x:hidden;
+}
+.screen.active { opacity:1; pointer-events:all; transform:translateY(0); }
+.screen.slide-left { transform:translateX(-30px); }
+.screen.slide-right { transform:translateX(30px); }
 
-  /* ── INPUTS ── */
-  input[type="text"], input[type="number"] {
-    width:100%; padding:16px 18px;
-    background:var(--bg2); border:1px solid var(--bg3);
-    border-radius:var(--radius-sm); color:var(--white);
-    font-family:'Inter',sans-serif; font-size:16px;
-    outline:none; transition:border-color 0.2s;
-  }
-  input:focus { border-color:var(--grey2); }
-  input::placeholder { color:var(--grey2); }
+/* ── SCROLLABLE CONTENT ── */
+.scroll-content {
+  width:100%; max-width:480px;
+  padding:0 20px 40px;
+  display:flex; flex-direction:column; align-items:center;
+  min-height:100%;
+}
 
-  /* ── CODE DISPLAY ── */
-  .room-code {
-    font-family:'Sora',sans-serif;
-    font-size:clamp(56px,20vw,88px);
-    font-weight:800; letter-spacing:12px;
-    color:var(--white);
-  }
+/* ── TOP BAR ── */
+.top-bar {
+  width:100%; padding:52px 20px 16px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:10;
+  background:linear-gradient(to bottom, var(--black) 60%, transparent);
+}
+.top-bar-center {
+  font-size:13px; font-weight:600; letter-spacing:1px;
+  color:var(--grey); text-align:center; flex:1;
+}
+.top-bar-icon {
+  width:36px; height:36px; border-radius:50%;
+  background:var(--bg3); border:none;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--white); font-size:16px;
+  transition:background 0.2s;
+}
+.top-bar-icon:active { background:var(--bg4); }
 
-  /* ── PLAYER LIST ── */
-  .player-list { width:100%; display:flex; flex-direction:column; gap:8px; }
-  .player-item {
-    display:flex; align-items:center; gap:12px;
-    padding:14px 16px;
-    background:var(--bg2); border-radius:var(--radius-sm);
-    border:1px solid var(--bg3);
-    transition:all 0.2s;
-  }
-  .player-avatar {
-    width:36px; height:36px; border-radius:50%;
-    background:var(--bg3);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Sora',sans-serif; font-size:14px; font-weight:700;
-    color:var(--white); flex-shrink:0;
-  }
-  .player-name { font-size:15px; font-weight:500; flex:1; }
-  .player-host { font-size:11px; color:var(--red); font-weight:600; letter-spacing:1px; }
+/* Progress bar */
+.progress-bar-wrap {
+  width:100%; height:3px; background:var(--bg3);
+  border-radius:2px; overflow:hidden;
+}
+.progress-bar-fill {
+  height:100%; background:var(--red);
+  border-radius:2px;
+  box-shadow:0 0 8px var(--red-glow);
+  transition:width 0.5s ease;
+}
 
-  /* ── VOTE ITEMS ── */
-  .vote-item {
-    width:100%;
-    display:flex; align-items:center; gap:12px;
-    padding:16px;
-    background:var(--bg2); border-radius:var(--radius-sm);
-    border:2px solid var(--bg3);
-    cursor:pointer; transition:all 0.2s;
-  }
-  .vote-item.selected {
-    border-color:var(--red);
-    background:var(--red-dim);
-  }
-  .vote-item .check {
-    width:22px; height:22px; border-radius:50%;
-    border:2px solid var(--bg3);
-    flex-shrink:0; transition:all 0.2s;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .vote-item.selected .check {
-    background:var(--red); border-color:var(--red);
-  }
-  .vote-item.selected .check::after {
-    content:''; width:8px; height:8px; border-radius:50%; background:#fff;
-  }
+/* ── TYPOGRAPHY ── */
+.t-hero {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:clamp(72px, 22vw, 96px);
+  letter-spacing:4px; line-height:0.9;
+  color:var(--white);
+}
+.t-title {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:clamp(32px, 10vw, 48px);
+  letter-spacing:2px; line-height:1;
+}
+.t-title-sm {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:clamp(24px, 7vw, 32px);
+  letter-spacing:1.5px; line-height:1.1;
+}
+.t-question {
+  font-size:clamp(22px, 6vw, 28px);
+  font-weight:700; line-height:1.3;
+  letter-spacing:-0.3px;
+}
+.t-body { font-size:15px; font-weight:400; color:var(--grey); line-height:1.6; }
+.t-sm { font-size:13px; color:var(--grey); }
+.t-xs { font-size:11px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--grey2); }
+.t-red { color:var(--red); }
+.t-center { text-align:center; }
+.t-white { color:var(--white); }
 
-  /* ── ROLE REVEAL ── */
-  .role-card {
-    width:100%; padding:40px 28px;
-    border-radius:24px;
-    text-align:center;
-    border:1px solid;
-  }
-  .role-card.truth {
-    background:var(--bg2); border-color:var(--bg3);
-  }
-  .role-card.lie {
-    background:rgba(255,59,59,0.08); border-color:var(--red);
-    box-shadow:0 0 60px rgba(255,59,59,0.1);
-  }
-  .role-emoji { font-size:52px; margin-bottom:20px; display:block; }
-  .role-label { font-size:12px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px; }
-  .role-label.truth { color:var(--grey); }
-  .role-label.lie { color:var(--red); }
-  .role-text { font-family:'Sora',sans-serif; font-size:28px; font-weight:700; line-height:1.2; }
-  .role-text.lie { color:var(--red); }
-  .role-instruction { margin-top:16px; font-size:14px; color:var(--grey); line-height:1.5; }
+/* ── BUTTONS ── */
+.btn {
+  width:100%; padding:18px 28px;
+  border:none; border-radius:var(--radius);
+  font-family:'Inter', sans-serif; font-size:16px; font-weight:700;
+  cursor:pointer; letter-spacing:0.5px;
+  transition:all 0.15s ease;
+  position:relative; overflow:hidden;
+}
+.btn:active { transform:scale(0.97); }
+.btn-red {
+  background:var(--red); color:var(--white);
+  box-shadow:0 0 24px var(--red-glow), 0 4px 16px rgba(0,0,0,0.4);
+}
+.btn-red:active { box-shadow:0 0 12px var(--red-glow-sm); }
+.btn-dark {
+  background:var(--bg3); color:var(--white);
+  border:1px solid var(--bg4);
+}
+.btn-outline {
+  background:transparent; color:var(--white);
+  border:1.5px solid var(--bg4);
+}
+.btn-outline-red {
+  background:transparent; color:var(--red);
+  border:1.5px solid var(--red);
+  box-shadow:0 0 12px var(--red-glow-sm);
+}
+.btn:disabled { opacity:0.3; pointer-events:none; }
 
-  /* ── QUESTION SCREEN ── */
-  .question-box {
-    width:100%; padding:32px 24px;
-    background:var(--bg2); border-radius:24px;
-    border:1px solid var(--bg3);
-    text-align:center;
-  }
-  .question-text {
-    font-family:'Sora',sans-serif;
-    font-size:clamp(18px,5vw,24px);
-    font-weight:600; line-height:1.4;
-    color:var(--white);
-  }
+/* ── INPUTS ── */
+input[type="text"] {
+  width:100%; padding:16px 18px;
+  background:var(--bg2); border:1.5px solid var(--bg3);
+  border-radius:var(--radius-sm); color:var(--white);
+  font-family:'Inter', sans-serif; font-size:16px; font-weight:500;
+  outline:none; transition:border-color 0.2s, box-shadow 0.2s;
+}
+input:focus {
+  border-color:var(--red);
+  box-shadow:0 0 0 3px var(--red-glow-sm);
+}
+input::placeholder { color:var(--grey2); font-weight:400; }
 
-  /* ── RESULTS PODIUM ── */
-  .podium { width:100%; display:flex; align-items:flex-end; justify-content:center; gap:12px; margin:24px 0; }
-  .podium-block { display:flex; flex-direction:column; align-items:center; gap:8px; flex:1; }
-  .podium-bar {
-    width:100%; border-radius:8px 8px 0 0;
-    background:var(--bg3);
-    transition:height 0.6s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  .podium-block:nth-child(1) .podium-bar { height:80px; background:var(--bg3); }
-  .podium-block:nth-child(2) .podium-bar { height:120px; background:var(--red); box-shadow:0 0 20px var(--red-glow); }
-  .podium-block:nth-child(3) .podium-bar { height:60px; background:var(--bg3); }
-  .podium-name { font-size:13px; font-weight:600; text-align:center; }
-  .podium-pos { font-size:20px; }
+/* ── NOTIFICATION ── */
+.notif {
+  position:fixed; top:20px; left:50%;
+  transform:translateX(-50%) translateY(-100px);
+  padding:12px 22px; border-radius:100px;
+  background:var(--bg3); border:1px solid var(--bg4);
+  font-size:14px; font-weight:600;
+  transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  z-index:9999; white-space:nowrap;
+  box-shadow:0 8px 32px rgba(0,0,0,0.6);
+}
+.notif.show { transform:translateX(-50%) translateY(0); }
+.notif.error { border-color:var(--red); color:var(--red); }
+.notif.success { border-color:#2ECC71; color:#2ECC71; }
 
-  /* ── WAITING ── */
-  .waiting-dots { display:flex; gap:8px; margin-top:16px; }
-  .dot {
-    width:8px; height:8px; border-radius:50%; background:var(--grey2);
-    animation:pulse 1.4s infinite;
-  }
-  .dot:nth-child(2) { animation-delay:0.2s; }
-  .dot:nth-child(3) { animation-delay:0.4s; }
-  @keyframes pulse {
-    0%,80%,100% { opacity:0.3; transform:scale(0.8); }
-    40% { opacity:1; transform:scale(1); }
-  }
+/* ── LOADING ── */
+#loading {
+  position:fixed; inset:0; background:var(--black);
+  display:flex; align-items:center; justify-content:center;
+  z-index:9998; transition:opacity 0.4s;
+  flex-direction:column; gap:32px;
+}
+#loading.hide { opacity:0; pointer-events:none; }
+.loading-mask {
+  width:80px; height:80px;
+  animation:spin 2s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
 
-  /* ── REVEAL ANIMATION ── */
-  @keyframes revealIn {
-    from { opacity:0; transform:scale(0.9) translateY(20px); }
-    to { opacity:1; transform:scale(1) translateY(0); }
-  }
-  .reveal-anim { animation:revealIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+/* ── DOTS ── */
+.dots { display:flex; gap:6px; justify-content:center; }
+.dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--grey2);
+  animation:dotpulse 1.4s infinite;
+}
+.dot:nth-child(2) { animation-delay:0.2s; }
+.dot:nth-child(3) { animation-delay:0.4s; }
+@keyframes dotpulse {
+  0%,80%,100% { opacity:0.3; transform:scale(0.8); }
+  40% { opacity:1; transform:scale(1); }
+}
 
-  /* ── ROUND BADGE ── */
-  .round-badge {
-    padding:6px 14px; border-radius:100px;
-    background:var(--bg2); border:1px solid var(--bg3);
-    font-size:12px; font-weight:600; letter-spacing:1px;
-    color:var(--grey);
-  }
+/* ── DIVIDER ── */
+.divider { width:100%; height:1px; background:var(--bg3); }
+.gap-4 { height:4px; flex-shrink:0; }
+.gap-8 { height:8px; flex-shrink:0; }
+.gap-12 { height:12px; flex-shrink:0; }
+.gap-16 { height:16px; flex-shrink:0; }
+.gap-20 { height:20px; flex-shrink:0; }
+.gap-24 { height:24px; flex-shrink:0; }
+.gap-32 { height:32px; flex-shrink:0; }
+.gap-40 { height:40px; flex-shrink:0; }
+.gap-48 { height:48px; flex-shrink:0; }
+.w100 { width:100%; }
+.stack { display:flex; flex-direction:column; gap:10px; width:100%; }
 
-  /* ── SPACERS & UTILS ── */
-  .gap-8 { height:8px; }
-  .gap-12 { height:12px; }
-  .gap-16 { height:16px; }
-  .gap-24 { height:24px; }
-  .gap-32 { height:32px; }
-  .gap-40 { height:40px; }
-  .w100 { width:100%; }
-  .text-center { text-align:center; }
-  .text-red { color:var(--red); }
-  .flex-col { display:flex; flex-direction:column; align-items:center; }
-  .stack { display:flex; flex-direction:column; gap:10px; width:100%; }
+/* ══════════════════════════
+   HOME SCREEN
+══════════════════════════ */
+#s-home {
+  background:var(--black);
+  justify-content:flex-start;
+}
+.home-bg {
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse 70% 50% at 50% 20%, rgba(255,59,59,0.08) 0%, transparent 70%);
+  pointer-events:none;
+}
+.home-top {
+  width:100%; padding:52px 20px 0;
+  display:flex; justify-content:space-between; align-items:center;
+  position:relative; z-index:2;
+}
+.home-share-btn {
+  width:38px; height:38px; border-radius:50%;
+  background:var(--bg2); border:1px solid var(--bg3);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--white); font-size:16px;
+  transition:all 0.2s;
+}
+.home-rules-btn {
+  background:transparent; border:none;
+  color:var(--grey); font-size:13px; font-weight:600;
+  letter-spacing:1px; text-transform:uppercase;
+  cursor:pointer; padding:8px;
+}
 
-  /* ── CONFIG ROWS ── */
-  .config-row {
-    display:flex; justify-content:space-between; align-items:center;
-    padding:16px; background:var(--bg2); border-radius:var(--radius-sm);
-    border:1px solid var(--bg3);
-  }
-  .config-label { font-size:14px; font-weight:500; }
-  .config-control { display:flex; align-items:center; gap:12px; }
-  .stepper-btn {
-    width:32px; height:32px; border-radius:8px;
-    background:var(--bg3); border:none; color:var(--white);
-    font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    transition:background 0.15s;
-  }
-  .stepper-btn:active { background:var(--grey2); }
-  .stepper-val { font-family:'Sora',sans-serif; font-size:18px; font-weight:700; min-width:24px; text-align:center; }
+.home-hero {
+  width:100%; display:flex; flex-direction:column; align-items:center;
+  padding:24px 20px 0;
+  position:relative; z-index:2;
+}
 
-  /* ── NOTIFICATION ── */
-  .notif {
-    position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-80px);
-    padding:12px 20px; border-radius:100px;
-    background:var(--bg3); border:1px solid var(--bg3);
-    font-size:14px; font-weight:500;
-    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-    z-index:9999; white-space:nowrap;
-  }
-  .notif.show { transform:translateX(-50%) translateY(0); }
-  .notif.error { border-color:var(--red); color:var(--red); }
+/* Mask SVG illustration */
+.mask-container {
+  width:180px; height:180px;
+  position:relative;
+  margin-bottom:8px;
+}
+.mask-glow {
+  position:absolute; inset:-20px;
+  background:radial-gradient(circle, rgba(255,59,59,0.2) 0%, transparent 70%);
+  pointer-events:none;
+  animation:glowpulse 3s ease-in-out infinite;
+}
+@keyframes glowpulse {
+  0%,100% { opacity:0.6; transform:scale(1); }
+  50% { opacity:1; transform:scale(1.05); }
+}
 
-  /* ── RESULTS REVEAL ── */
-  .result-player-item {
-    width:100%; display:flex; align-items:center; gap:12px;
-    padding:14px 16px; border-radius:var(--radius-sm);
-    border:1px solid var(--bg3); background:var(--bg2);
-  }
-  .result-player-item.liar {
-    border-color:var(--red); background:var(--red-dim);
-  }
-  .role-badge {
-    padding:3px 10px; border-radius:100px;
-    font-size:11px; font-weight:600; letter-spacing:1px;
-  }
-  .role-badge.truth { background:var(--bg3); color:var(--grey); }
-  .role-badge.lie { background:var(--red); color:#fff; }
+.home-tagline {
+  font-size:13px; font-weight:600; letter-spacing:3px;
+  text-transform:uppercase; color:var(--grey);
+  text-align:center; margin-bottom:4px;
+}
 
-  /* ── DIVIDER ── */
-  .divider {
-    width:100%; height:1px; background:var(--bg3); margin:4px 0;
-  }
+.home-actions {
+  width:100%; padding:0 20px;
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; gap:12px;
+}
 
-  /* ── LOADING OVERLAY ── */
-  #loading {
-    position:fixed; inset:0; background:var(--bg);
-    display:flex; align-items:center; justify-content:center;
-    z-index:9998; transition:opacity 0.3s;
-  }
-  #loading.hide { opacity:0; pointer-events:none; }
+.home-features {
+  width:100%; display:flex; justify-content:space-around;
+  padding:0 20px;
+  position:relative; z-index:2;
+}
+.home-feature {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.home-feature-icon {
+  width:40px; height:40px; border-radius:12px;
+  background:var(--bg2); border:1px solid var(--bg3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+}
+.home-feature-label {
+  font-size:10px; font-weight:600; letter-spacing:1px;
+  text-transform:uppercase; color:var(--grey2); text-align:center;
+}
+
+/* ══════════════════════════
+   RULES MODAL
+══════════════════════════ */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.85);
+  z-index:100; display:flex; align-items:flex-end;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.3s;
+}
+.modal-overlay.open { opacity:1; pointer-events:all; }
+.modal-sheet {
+  width:100%; background:var(--bg);
+  border-radius:24px 24px 0 0;
+  padding:24px 24px 48px;
+  transform:translateY(100%);
+  transition:transform 0.4s cubic-bezier(0.34,1.2,0.64,1);
+  max-height:85vh; overflow-y:auto;
+}
+.modal-overlay.open .modal-sheet { transform:translateY(0); }
+.modal-handle {
+  width:40px; height:4px; border-radius:2px;
+  background:var(--bg4); margin:0 auto 24px;
+}
+
+/* Rules cards */
+.rules-cards {
+  display:flex; gap:12px; overflow-x:auto;
+  padding-bottom:8px; scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.rules-cards::-webkit-scrollbar { display:none; }
+.rule-card {
+  min-width:240px; padding:24px;
+  background:var(--bg2); border-radius:var(--radius);
+  border:1px solid var(--bg3);
+  scroll-snap-align:start; flex-shrink:0;
+}
+.rule-card-num {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:48px; color:var(--red);
+  line-height:1; margin-bottom:8px;
+  text-shadow:0 0 20px var(--red-glow);
+}
+.rule-card-title {
+  font-size:14px; font-weight:700;
+  margin-bottom:6px; color:var(--white);
+}
+.rule-card-body { font-size:13px; color:var(--grey); line-height:1.5; }
+
+/* ══════════════════════════
+   AVATAR PICKER
+══════════════════════════ */
+.avatar-grid {
+  display:grid; grid-template-columns:repeat(5, 1fr); gap:10px;
+  width:100%;
+}
+.avatar-opt {
+  aspect-ratio:1; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px;
+  border:2.5px solid var(--bg3);
+  cursor:pointer; transition:all 0.2s;
+  background:var(--bg2);
+}
+.avatar-opt.selected {
+  border-color:var(--red);
+  box-shadow:0 0 16px var(--red-glow);
+  background:rgba(255,59,59,0.1);
+  transform:scale(1.08);
+}
+
+/* ══════════════════════════
+   CREATE / JOIN
+══════════════════════════ */
+.back-btn {
+  background:transparent; border:none;
+  color:var(--grey); font-size:22px;
+  cursor:pointer; padding:4px; width:36px;
+  display:flex; align-items:center;
+}
+
+/* Category cards */
+.cat-grid { display:flex; flex-direction:column; gap:10px; width:100%; }
+.cat-card {
+  padding:18px 20px;
+  background:var(--bg2); border:1.5px solid var(--bg3);
+  border-radius:var(--radius-sm); cursor:pointer;
+  transition:all 0.2s; display:flex; align-items:center; gap:14px;
+}
+.cat-card.selected {
+  border-color:var(--red);
+  background:rgba(255,59,59,0.08);
+  box-shadow:0 0 16px var(--red-glow-sm);
+}
+.cat-icon { font-size:28px; flex-shrink:0; }
+.cat-info { flex:1; }
+.cat-name { font-size:16px; font-weight:700; margin-bottom:2px; }
+.cat-desc { font-size:12px; color:var(--grey); }
+.cat-check {
+  width:22px; height:22px; border-radius:50%;
+  border:2px solid var(--bg4);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all 0.2s;
+}
+.cat-card.selected .cat-check {
+  background:var(--red); border-color:var(--red);
+}
+.cat-card.selected .cat-check::after {
+  content:'✓'; font-size:11px; color:#fff; font-weight:700;
+}
+
+/* Config stepper */
+.config-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:16px 18px; background:var(--bg2);
+  border-radius:var(--radius-sm); border:1px solid var(--bg3);
+}
+.stepper { display:flex; align-items:center; gap:14px; }
+.stepper-btn {
+  width:34px; height:34px; border-radius:10px;
+  background:var(--bg3); border:none; color:var(--white);
+  font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.15s;
+}
+.stepper-btn:active { background:var(--bg4); transform:scale(0.93); }
+.stepper-val {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:28px; min-width:28px; text-align:center;
+  color:var(--white);
+}
+
+/* Code input */
+.code-input {
+  font-family:'Bebas Neue', sans-serif !important;
+  font-size:48px !important; letter-spacing:12px !important;
+  text-align:center !important; padding:20px !important;
+}
+
+/* ══════════════════════════
+   LOBBY
+══════════════════════════ */
+.room-code-display {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:clamp(64px, 20vw, 96px);
+  letter-spacing:16px;
+  text-shadow:0 0 40px rgba(255,255,255,0.1);
+}
+
+.player-list { width:100%; display:flex; flex-direction:column; gap:8px; }
+.player-item {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px; background:var(--bg2);
+  border-radius:var(--radius-sm); border:1px solid var(--bg3);
+}
+.p-avatar { font-size:26px; width:44px; height:44px;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--bg3); flex-shrink:0; }
+.p-name { font-size:15px; font-weight:600; flex:1; }
+.p-host-badge {
+  font-size:10px; font-weight:700; letter-spacing:1.5px;
+  color:var(--red); text-transform:uppercase;
+}
+
+/* ══════════════════════════
+   ROLE REVEAL
+══════════════════════════ */
+.role-reveal-screen {
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 24px;
+  text-align:center;
+}
+.role-reveal-card {
+  width:100%; max-width:360px;
+  padding:48px 32px; border-radius:28px;
+  display:flex; flex-direction:column; align-items:center;
+  animation:revealIn 0.5s cubic-bezier(0.34,1.4,0.64,1) forwards;
+}
+.role-reveal-card.truth {
+  background:var(--bg2); border:1px solid var(--bg3);
+}
+.role-reveal-card.lie {
+  background:rgba(255,59,59,0.07);
+  border:1.5px solid var(--red);
+  box-shadow:0 0 60px rgba(255,59,59,0.15), 0 0 120px rgba(255,59,59,0.05);
+}
+@keyframes revealIn {
+  from { opacity:0; transform:scale(0.85) translateY(30px); }
+  to { opacity:1; transform:scale(1) translateY(0); }
+}
+.role-big {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:clamp(48px, 15vw, 72px);
+  letter-spacing:3px; line-height:1;
+}
+.role-big.lie {
+  color:var(--red);
+  text-shadow:0 0 30px var(--red-glow);
+}
+.role-big.truth { color:var(--white); }
+
+/* ══════════════════════════
+   QUESTION SCREEN
+══════════════════════════ */
+.question-screen {
+  min-height:100vh;
+  display:flex; flex-direction:column;
+}
+.question-main {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  padding:24px;
+}
+.question-text-wrap {
+  text-align:center;
+}
+.question-bottom {
+  padding:24px 20px 48px;
+  width:100%;
+}
+
+/* ══════════════════════════
+   VOTE SCREEN
+══════════════════════════ */
+.vote-item {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px; background:var(--bg2);
+  border-radius:var(--radius-sm);
+  border:2px solid var(--bg3);
+  cursor:pointer; transition:all 0.2s;
+}
+.vote-item.selected {
+  border-color:var(--red);
+  background:rgba(255,59,59,0.08);
+  box-shadow:0 0 16px var(--red-glow-sm);
+}
+.vote-check {
+  width:24px; height:24px; border-radius:50%;
+  border:2px solid var(--bg4); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.vote-item.selected .vote-check {
+  background:var(--red); border-color:var(--red);
+}
+.vote-item.selected .vote-check::after {
+  content:'✓'; font-size:12px; color:#fff; font-weight:700;
+}
+.vote-avatar { font-size:28px; flex-shrink:0; }
+.vote-name { font-size:16px; font-weight:600; flex:1; }
+
+/* ══════════════════════════
+   RESULTS
+══════════════════════════ */
+.result-liar-ring {
+  width:160px; height:160px; border-radius:50%;
+  border:3px solid var(--red);
+  box-shadow:0 0 0 8px rgba(255,59,59,0.1),
+             0 0 40px var(--red-glow),
+             0 0 80px rgba(255,59,59,0.1);
+  display:flex; align-items:center; justify-content:center;
+  font-size:72px;
+  animation:ringpulse 2s ease-in-out infinite;
+}
+@keyframes ringpulse {
+  0%,100% { box-shadow:0 0 0 8px rgba(255,59,59,0.1), 0 0 40px var(--red-glow); }
+  50% { box-shadow:0 0 0 16px rgba(255,59,59,0.05), 0 0 60px var(--red-glow), 0 0 100px rgba(255,59,59,0.08); }
+}
+
+.menteur-text {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:clamp(56px, 18vw, 80px);
+  color:var(--red); letter-spacing:4px;
+  text-shadow:0 0 30px var(--red-glow), 0 0 60px rgba(255,59,59,0.2);
+  line-height:1;
+}
+
+.votes-row {
+  display:flex; gap:16px; justify-content:center;
+  flex-wrap:wrap; width:100%;
+}
+.vote-count-item {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+}
+.vote-count-avatar {
+  font-size:32px; width:52px; height:52px;
+  border-radius:50%; background:var(--bg2);
+  border:2px solid var(--bg3);
+  display:flex; align-items:center; justify-content:center;
+}
+.vote-count-avatar.accused {
+  border-color:var(--red);
+  box-shadow:0 0 12px var(--red-glow-sm);
+}
+.vote-count-num {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:20px; color:var(--white);
+}
+.vote-count-num.red { color:var(--red); }
+
+.result-player-row {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px; border-radius:var(--radius-sm);
+  background:var(--bg2); border:1px solid var(--bg3);
+  width:100%;
+}
+.result-player-row.liar {
+  border-color:var(--red);
+  background:rgba(255,59,59,0.07);
+}
+.role-pill {
+  padding:4px 12px; border-radius:100px;
+  font-size:11px; font-weight:700; letter-spacing:1px;
+  text-transform:uppercase;
+}
+.role-pill.lie { background:var(--red); color:#fff; }
+.role-pill.truth { background:var(--bg3); color:var(--grey); }
+
+/* ══════════════════════════
+   PODIUM
+══════════════════════════ */
+.podium-wrap {
+  display:flex; align-items:flex-end; justify-content:center;
+  gap:8px; width:100%; padding:0 8px;
+}
+.podium-col { display:flex; flex-direction:column; align-items:center; gap:8px; flex:1; }
+.podium-avatar { font-size:32px; }
+.podium-name { font-size:12px; font-weight:600; text-align:center; max-width:80px; word-break:break-word; }
+.podium-bar {
+  width:100%; border-radius:8px 8px 0 0;
+  background:var(--bg3);
+}
+.podium-bar.first {
+  background:var(--red);
+  box-shadow:0 0 20px var(--red-glow);
+}
+.podium-medal { font-size:22px; }
+
+/* ══════════════════════════
+   WAITING
+══════════════════════════ */
+.waiting-screen {
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 24px; text-align:center; gap:16px;
+}
+
+/* ══════════════════════════
+   STICKY BOTTOM
+══════════════════════════ */
+.sticky-bottom {
+  position:sticky; bottom:0; width:100%;
+  padding:16px 20px 40px;
+  background:linear-gradient(to top, var(--black) 60%, transparent);
+  z-index:5;
+}
 </style>
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0F0F0F">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="MITO">
-  <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
 <body>
 
 <!-- Loading -->
 <div id="loading">
-  <div class="flex-col text-center">
-    <span class="title-xl">MITO</span>
-    <div class="waiting-dots" style="justify-content:center;margin-top:20px;">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-    </div>
-  </div>
+  <svg class="loading-mask" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="40" r="36" fill="none" stroke="#1E1E1E" stroke-width="3"/>
+    <circle cx="40" cy="40" r="36" fill="none" stroke="#FF3B3B" stroke-width="3"
+      stroke-dasharray="56 170" stroke-linecap="round"
+      style="filter:drop-shadow(0 0 6px rgba(255,59,59,0.6))"/>
+  </svg>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:4px;">MITO</div>
 </div>
 
 <!-- Notification -->
 <div class="notif" id="notif"></div>
 
+<!-- Rules Modal -->
+<div class="modal-overlay" id="rules-modal" onclick="closeRules(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:20px;">LES RÈGLES</div>
+    <div class="rules-cards">
+      <div class="rule-card">
+        <div class="rule-card-num">01</div>
+        <div class="rule-card-title">Les rôles secrets</div>
+        <div class="rule-card-body">Chaque manche, tu reçois un rôle secret : <span style="color:var(--white);font-weight:600;">Vérité</span> ou <span style="color:var(--red);font-weight:600;">Mensonge</span>. Ne le montre à personne.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-num">02</div>
+        <div class="rule-card-title">Répondre à voix haute</div>
+        <div class="rule-card-body">Une question s'affiche. Tout le monde répond à voix haute, dans l'ordre. Les menteurs doivent inventer. Les autres disent la vérité.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-num">03</div>
+        <div class="rule-card-title">Débat libre</div>
+        <div class="rule-card-body">Après les réponses, échangez librement. Défendez-vous, accusez les autres, semez le doute.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-num">04</div>
+        <div class="rule-card-title">Le vote</div>
+        <div class="rule-card-body">Chaque joueur vote pour le joueur qu'il pense être le menteur. Un seul vote par personne.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-num">05</div>
+        <div class="rule-card-title">Les points</div>
+        <div class="rule-card-body">Menteur non démasqué → <span style="color:var(--red);font-weight:600;">+2 pts</span>. Joueur vérité qui vote juste → <span style="color:var(--white);font-weight:600;">+1 pt</span>.</div>
+      </div>
+    </div>
+    <div class="gap-20"></div>
+    <button class="btn btn-dark" onclick="closeRulesBtn()">Compris !</button>
+  </div>
+</div>
+
 <!-- ══════════════════════════════════════════
-     SCREEN 1 : HOME
+     SCREEN : HOME
 ══════════════════════════════════════════ -->
 <div class="screen active" id="s-home">
-  <div class="flex-col text-center" style="gap:8px;margin-bottom:60px;">
-    <span class="title-xl">MITO</span>
-    <span class="body">Vérité ou mensonge ?<br>À toi de voir.</span>
+  <div class="home-bg"></div>
+
+  <div class="home-top">
+    <button class="home-rules-btn" onclick="openRules()">Règles</button>
+    <button class="home-share-btn" onclick="shareApp()" title="Partager">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+    </button>
   </div>
-  <div class="stack">
-    <button class="btn btn-primary" onclick="showScreen('s-create')">Créer une partie</button>
-    <button class="btn btn-secondary" onclick="showScreen('s-join')">Rejoindre</button>
+
+  <div class="home-hero">
+    <div class="mask-container">
+      <div class="mask-glow"></div>
+      <img src="/masque.png" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;">
+    </div>
+
+    <div class="t-hero">MITO</div>
+    <div class="gap-8"></div>
+    <div class="home-tagline">Tout le monde parle.</div>
+    <div style="font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:32px;text-shadow:0 0 12px var(--red-glow);">Quelqu'un ment.</div>
   </div>
+
+  <div class="home-actions">
+    <button class="btn btn-red" onclick="showScreen('s-create')">Créer une partie</button>
+    <button class="btn btn-outline" onclick="showScreen('s-join')">Rejoindre</button>
+  </div>
+
+  <div class="gap-24"></div>
 </div>
 
 <!-- ══════════════════════════════════════════
-     SCREEN 2 : CREATE GAME
+     SCREEN : CREATE GAME
 ══════════════════════════════════════════ -->
 <div class="screen" id="s-create">
-  <div class="w100" style="max-width:400px;">
-    <button class="btn-ghost btn" style="width:auto;padding:10px 16px;margin-bottom:32px;font-size:14px;" onclick="showScreen('s-home')">← Retour</button>
-    <div class="title-lg">Nouvelle partie</div>
+  <div class="top-bar" style="background:var(--black);">
+    <button class="top-bar-icon" onclick="showScreen('s-home')">←</button>
+    <div class="top-bar-center" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">NOUVELLE PARTIE</div>
+    <div style="width:36px;"></div>
+  </div>
+  <div class="scroll-content" style="padding-top:0;">
+
     <div class="gap-8"></div>
-    <div class="body">Configure ta session MITO.</div>
-    <div class="gap-32"></div>
-
-    <div class="label" style="margin-bottom:10px;">Ton pseudo</div>
-    <input type="text" id="create-name" placeholder="Ex: Alex" maxlength="16">
-    <div class="gap-16"></div>
-
-    <div class="label" style="margin-bottom:10px;">Nombre de manches</div>
-    <div class="config-row">
-      <span class="config-label">Manches</span>
-      <div class="config-control">
-        <button class="stepper-btn" onclick="changeRounds(-1)">−</button>
-        <span class="stepper-val" id="rounds-val">5</span>
-        <button class="stepper-btn" onclick="changeRounds(1)">+</button>
-      </div>
-    </div>
+    <div class="t-xs w100">Ton avatar</div>
     <div class="gap-12"></div>
+    <div class="avatar-grid" id="create-avatar-grid"></div>
+    <div class="gap-20"></div>
 
-    <div class="label" style="margin-bottom:10px;">Menteurs par manche</div>
-    <div class="config-row">
-      <span class="config-label">Menteurs</span>
-      <div class="config-control">
-        <button class="stepper-btn" onclick="changeLiars(-1)">−</button>
-        <span class="stepper-val" id="liars-val">1</span>
-        <button class="stepper-btn" onclick="changeLiars(1)">+</button>
+    <div class="t-xs w100">Ton pseudo</div>
+    <div class="gap-8"></div>
+    <input type="text" id="create-name" placeholder="Ex: Alex" maxlength="16">
+    <div class="gap-20"></div>
+
+    <div class="t-xs w100">Catégorie de questions</div>
+    <div class="gap-12"></div>
+    <div class="cat-grid">
+      <div class="cat-card selected" id="cat-soft" onclick="selectCat('soft')">
+        <div class="cat-icon">🌿</div>
+        <div class="cat-info">
+          <div class="cat-name">Soft</div>
+          <div class="cat-desc">Questions légères, ambiance détendue</div>
+        </div>
+        <div class="cat-check"></div>
+      </div>
+      <div class="cat-card" id="cat-spicy" onclick="selectCat('spicy')">
+        <div class="cat-icon">🌶️</div>
+        <div class="cat-info">
+          <div class="cat-name">Spicy</div>
+          <div class="cat-desc">Gênant, tendu, révélateur</div>
+        </div>
+        <div class="cat-check"></div>
+      </div>
+      <div class="cat-card" id="cat-hot" onclick="selectCat('hot')">
+        <div class="cat-icon">🔥</div>
+        <div class="cat-info">
+          <div class="cat-name">Hot</div>
+          <div class="cat-desc">Questions osées, réservées aux adultes</div>
+        </div>
+        <div class="cat-check"></div>
       </div>
     </div>
-    <div class="gap-32"></div>
+    <div class="gap-20"></div>
 
-    <button class="btn btn-primary" id="btn-create" onclick="createGame()">Créer la partie</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     SCREEN 3 : JOIN GAME
-══════════════════════════════════════════ -->
-<div class="screen" id="s-join">
-  <div class="w100" style="max-width:400px;">
-    <button class="btn-ghost btn" style="width:auto;padding:10px 16px;margin-bottom:32px;font-size:14px;" onclick="showScreen('s-home')">← Retour</button>
-    <div class="title-lg">Rejoindre</div>
-    <div class="gap-8"></div>
-    <div class="body">Entre le code de la salle.</div>
-    <div class="gap-32"></div>
-
-    <div class="label" style="margin-bottom:10px;">Ton pseudo</div>
-    <input type="text" id="join-name" placeholder="Ex: Alex" maxlength="16">
-    <div class="gap-16"></div>
-
-    <div class="label" style="margin-bottom:10px;">Code à 4 chiffres</div>
-    <input type="text" id="join-code" placeholder="0000" maxlength="4"
-      style="font-family:'Sora',sans-serif;font-size:32px;font-weight:700;letter-spacing:8px;text-align:center;"
-      oninput="this.value=this.value.replace(/\D/g,'')">
-    <div class="gap-32"></div>
-
-    <button class="btn btn-primary" id="btn-join" onclick="joinGame()">Rejoindre</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     SCREEN 4 : LOBBY
-══════════════════════════════════════════ -->
-<div class="screen" id="s-lobby">
-  <div class="w100" style="max-width:400px;">
-    <div class="text-center" style="margin-bottom:32px;">
-      <div class="label" style="margin-bottom:12px;">Code de la salle</div>
-      <div class="room-code" id="lobby-code">----</div>
-      <div class="body-sm" style="margin-top:8px;">Partage ce code avec tes amis</div>
-    </div>
-
-    <div class="label" style="margin-bottom:12px;">Joueurs <span id="player-count" style="color:var(--white);">0</span>/12</div>
-    <div class="player-list" id="player-list"></div>
-    <div class="gap-24"></div>
-
-    <div id="host-actions">
-      <div class="body-sm text-center" style="margin-bottom:16px;">Minimum 4 joueurs pour démarrer</div>
-      <button class="btn btn-primary" id="btn-start" onclick="startGame()" disabled>Lancer la partie</button>
-    </div>
-    <div id="guest-waiting" style="display:none;">
-      <div class="flex-col text-center">
-        <div class="body">En attente du host...</div>
-        <div class="waiting-dots" style="justify-content:center;">
-          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <div class="t-xs w100">Configuration</div>
+    <div class="gap-12"></div>
+    <div class="stack">
+      <div class="config-row">
+        <span style="font-size:14px;font-weight:600;">Nombre de manches</span>
+        <div class="stepper">
+          <button class="stepper-btn" onclick="changeRounds(-1)">−</button>
+          <span class="stepper-val" id="rounds-val">5</span>
+          <button class="stepper-btn" onclick="changeRounds(1)">+</button>
+        </div>
+      </div>
+      <div class="config-row">
+        <span style="font-size:14px;font-weight:600;">Menteurs par manche</span>
+        <div class="stepper">
+          <button class="stepper-btn" onclick="changeLiars(-1)">−</button>
+          <span class="stepper-val" id="liars-val">1</span>
+          <button class="stepper-btn" onclick="changeLiars(1)">+</button>
         </div>
       </div>
     </div>
+    <div class="gap-40"></div>
+  </div>
+  <div class="sticky-bottom">
+    <button class="btn btn-red" id="btn-create" onclick="createGame()">Créer la partie</button>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════
-     SCREEN 5 : ROLE REVEAL
+     SCREEN : JOIN GAME
+══════════════════════════════════════════ -->
+<div class="screen" id="s-join">
+  <div class="top-bar" style="background:var(--black);">
+    <button class="top-bar-icon" onclick="showScreen('s-home')">←</button>
+    <div class="top-bar-center" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">REJOINDRE</div>
+    <div style="width:36px;"></div>
+  </div>
+  <div class="scroll-content" style="padding-top:0;">
+    <div class="gap-8"></div>
+    <div class="t-xs w100">Ton avatar</div>
+    <div class="gap-12"></div>
+    <div class="avatar-grid" id="join-avatar-grid"></div>
+    <div class="gap-20"></div>
+    <div class="t-xs w100">Ton pseudo</div>
+    <div class="gap-8"></div>
+    <input type="text" id="join-name" placeholder="Ex: Alex" maxlength="16">
+    <div class="gap-20"></div>
+    <div class="t-xs w100">Code de la salle</div>
+    <div class="gap-8"></div>
+    <input type="text" id="join-code" placeholder="0000" maxlength="4" class="code-input"
+      oninput="this.value=this.value.replace(/\D/g,'')">
+    <div class="gap-40"></div>
+  </div>
+  <div class="sticky-bottom">
+    <button class="btn btn-red" id="btn-join" onclick="joinGame()">Rejoindre</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN : LOBBY
+══════════════════════════════════════════ -->
+<div class="screen" id="s-lobby">
+  <div class="top-bar" style="background:var(--black);padding-bottom:0;">
+    <div style="width:36px;"></div>
+    <div class="top-bar-center" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">SALLE D'ATTENTE</div>
+    <div style="width:36px;"></div>
+  </div>
+  <div class="scroll-content" style="padding-top:12px;">
+    <div class="t-xs">Code de la salle</div>
+    <div class="gap-8"></div>
+    <div class="room-code-display" id="lobby-code">----</div>
+    <div class="gap-4"></div>
+    <div class="t-sm">Partage ce code avec tes amis</div>
+    <div class="gap-24"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:12px;">
+      <div class="t-xs">Joueurs</div>
+      <div style="font-size:13px;font-weight:600;color:var(--grey);"><span id="player-count">0</span>/12</div>
+    </div>
+    <div class="player-list" id="player-list"></div>
+    <div class="gap-40"></div>
+  </div>
+  <div class="sticky-bottom">
+    <div id="host-actions">
+      <div class="t-sm t-center" id="start-hint" style="margin-bottom:12px;">Minimum 4 joueurs pour démarrer</div>
+      <button class="btn btn-red" id="btn-start" onclick="startGame()" disabled>Lancer la partie</button>
+    </div>
+    <div id="guest-waiting" style="display:none;text-align:center;">
+      <div class="t-sm" style="margin-bottom:12px;">En attente du host...</div>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN : ROLE REVEAL
 ══════════════════════════════════════════ -->
 <div class="screen" id="s-role">
-  <div class="w100" style="max-width:400px;text-align:center;">
-    <div class="round-badge" id="role-round-badge" style="margin-bottom:32px;display:inline-block;">Manche 1</div>
-    <div class="title-md" style="margin-bottom:24px;color:var(--grey);">Ton rôle pour cette manche</div>
-
-    <div class="role-card reveal-anim" id="role-card">
-      <span class="role-emoji" id="role-emoji">◯</span>
-      <div class="role-label" id="role-label">VÉRITÉ</div>
-      <div class="role-text" id="role-text">Tu dis la vérité</div>
-      <div class="role-instruction" id="role-instruction">Réponds honnêtement à la question. Sois convaincant·e.</div>
+  <div class="role-reveal-screen" style="width:100%;">
+    <div class="t-xs" id="role-round-label" style="margin-bottom:32px;">MANCHE 1</div>
+    <div class="role-reveal-card truth" id="role-card" style="width:100%;max-width:340px;">
+      <div style="font-size:56px;margin-bottom:20px;" id="role-emoji">◯</div>
+      <div class="t-xs" id="role-sublabel" style="margin-bottom:8px;">TON RÔLE</div>
+      <div class="role-big truth" id="role-big-text">VÉRITÉ</div>
+      <div class="gap-16"></div>
+      <div class="t-sm t-center" id="role-instruction" style="line-height:1.6;"></div>
     </div>
-
     <div class="gap-32"></div>
-    <div class="body-sm">Garde ton rôle secret. Ne montre pas cet écran.</div>
-    <div class="gap-24"></div>
-    <button class="btn btn-primary" onclick="confirmRole()">J'ai vu mon rôle</button>
+    <div class="t-xs t-center" style="margin-bottom:20px;">Ne montre pas cet écran</div>
+    <div style="width:100%;max-width:340px;padding:0 4px;">
+      <button class="btn btn-red" onclick="confirmRole()">J'ai vu mon rôle</button>
+    </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════
-     SCREEN 6 : WAITING FOR ALL ROLES
+     SCREEN : WAITING ROLES
 ══════════════════════════════════════════ -->
 <div class="screen" id="s-waiting-roles">
-  <div class="flex-col text-center" style="gap:16px;">
-    <div class="title-md" style="color:var(--grey);">En attente</div>
-    <div class="body">Les autres joueurs lisent leur rôle...</div>
-    <div class="waiting-dots" style="justify-content:center;">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-    </div>
+  <div class="waiting-screen">
+    <div class="t-xs">EN ATTENTE</div>
+    <div class="gap-8"></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;">Les autres lisent leur rôle...</div>
     <div class="gap-16"></div>
-    <div class="body-sm" id="roles-confirmed-count">0 / 0 prêts</div>
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════
-     SCREEN 7 : QUESTION
+     SCREEN : QUESTION
 ══════════════════════════════════════════ -->
 <div class="screen" id="s-question">
-  <div class="w100" style="max-width:400px;text-align:center;">
-    <div class="round-badge" id="q-round-badge" style="margin-bottom:32px;display:inline-block;">Manche 1</div>
-
-    <div class="label" style="margin-bottom:16px;">Question de la manche</div>
-    <div class="question-box">
-      <div class="question-text" id="question-text">Chargement...</div>
+  <div class="question-screen" style="width:100%;">
+    <div style="width:100%;padding:52px 20px 16px;background:linear-gradient(to bottom,var(--black) 60%,transparent);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-size:13px;font-weight:600;color:var(--grey);" id="q-round-label">Manche 1/5</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--grey)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          <span style="font-size:13px;color:var(--grey);" id="q-player-count">0</span>
+        </div>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="q-progress" style="width:20%;"></div></div>
     </div>
-
-    <div class="gap-24"></div>
-    <div class="body" style="color:var(--grey);">Répondez chacun à voix haute.<br>Soyez convaincant·e·s.</div>
-    <div class="gap-32"></div>
-
-    <div id="q-host-actions" style="display:none;">
-      <button class="btn btn-primary" onclick="startVoting()">Passer au vote</button>
+    <div class="question-main">
+      <div class="question-text-wrap">
+        <div class="t-question t-center" id="question-text">Chargement...</div>
+      </div>
     </div>
-    <div id="q-guest-actions">
-      <div class="body-sm" style="color:var(--grey2);">Attendez que tout le monde ait répondu.</div>
+    <div class="question-bottom">
+     <div id="q-host-btn" style="display:none;">
+  <button class="btn btn-red" onclick="startVoting()">Passer au vote</button>
+  <div class="gap-12"></div>
+  <button class="btn btn-outline" onclick="skipQuestion()">Passer la question</button>
+</div>
+      <div id="q-guest-msg" style="text-align:center;">
+        <div class="t-sm">Répondez à voix haute, dans l'ordre.</div>
+        <div class="gap-8"></div>
+        <div class="t-xs" style="color:var(--grey2);">Le host lancera le vote quand tout le monde aura répondu</div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════
-     SCREEN 8 : VOTING
+     SCREEN : VOTING
 ══════════════════════════════════════════ -->
 <div class="screen" id="s-voting">
-  <div class="w100" style="max-width:400px;">
-    <div class="text-center" style="margin-bottom:32px;">
-      <div class="round-badge" id="v-round-badge" style="display:inline-block;margin-bottom:16px;">Manche 1</div>
-      <div class="title-md">Qui ment ?</div>
-      <div class="gap-8"></div>
-      <div class="body">Vote pour le joueur que tu suspectes.</div>
+  <div class="top-bar" style="position:relative;background:var(--black);">
+    <div style="width:36px;"></div>
+    <div class="top-bar-center">
+      <div style="font-size:13px;font-weight:600;color:var(--grey);" id="v-round-label">Manche 1/5</div>
     </div>
+    <div style="width:36px;display:flex;align-items:center;justify-content:flex-end;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--grey)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      <span style="font-size:12px;color:var(--grey);margin-left:4px;" id="v-player-count">0</span>
+    </div>
+  </div>
+  <div style="width:100%;padding:0 20px 6px;background:var(--black);">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="v-progress" style="width:40%;"></div></div>
+  </div>
 
+  <div class="scroll-content" style="padding-top:20px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1.5px;width:100%;">Qui ment selon toi ?</div>
+    <div class="gap-4"></div>
+    <div class="t-sm w100">Sélectionne un joueur</div>
+    <div class="gap-20"></div>
     <div class="stack" id="vote-list"></div>
-    <div class="gap-24"></div>
-    <button class="btn btn-primary" id="btn-vote" onclick="submitVote()" disabled>Confirmer mon vote</button>
-    <div class="gap-12"></div>
-    <div class="body-sm text-center" id="votes-progress">0 / 0 ont voté</div>
+    <div class="gap-16"></div>
+    <div class="t-xs t-center" id="votes-progress">0 / 0 ont voté</div>
+    <div class="gap-40"></div>
+  </div>
+  <div class="sticky-bottom">
+    <button class="btn btn-red" id="btn-vote" onclick="submitVote()" disabled>Valider mon vote</button>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════
-     SCREEN 9 : ROUND RESULTS
+     SCREEN : ROUND RESULTS
 ══════════════════════════════════════════ -->
 <div class="screen" id="s-round-results">
-  <div class="w100" style="max-width:400px;text-align:center;">
-    <div class="round-badge" id="rr-round-badge" style="display:inline-block;margin-bottom:24px;">Manche 1</div>
-    <div class="title-lg" style="margin-bottom:8px;" id="rr-headline">Révélation</div>
-    <div class="body" style="margin-bottom:32px;" id="rr-subline">Voilà qui mentait...</div>
-
-    <div class="stack" id="rr-player-list"></div>
-
-    <div class="gap-32"></div>
-    <div id="rr-host-actions" style="display:none;">
-      <button class="btn btn-primary" id="btn-next-round" onclick="nextRound()">Manche suivante →</button>
+  <div style="width:100%;max-width:480px;margin:0 auto;">
+    <div class="top-bar" style="position:relative;background:var(--black);">
+      <div style="width:36px;"></div>
+      <div class="top-bar-center" style="font-size:13px;font-weight:600;color:var(--grey);" id="rr-round-label">Résultats · Manche 1</div>
+      <div style="width:36px;"></div>
     </div>
-    <div id="rr-guest-wait" style="display:none;">
-      <div class="body-sm" style="color:var(--grey2);">En attente du host...</div>
+    <div style="width:100%;padding:0 20px 16px;background:var(--black);">
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="rr-progress" style="width:60%;"></div></div>
+    </div>
+
+    <div style="padding:20px 20px 0;display:flex;flex-direction:column;align-items:center;text-align:center;">
+      <!-- Liar ring -->
+      <div class="result-liar-ring" id="rr-liar-avatar">🎭</div>
+      <div class="gap-20"></div>
+      <div style="font-size:18px;font-weight:500;color:var(--grey);" id="rr-liar-name">Lucas</div>
+      <div class="gap-4"></div>
+      <div style="font-size:15px;color:var(--grey);">était</div>
+      <div class="gap-4"></div>
+      <div class="menteur-text" id="rr-role-text">MENTEUR</div>
+      <div class="gap-32"></div>
+
+      <div class="t-xs w100" style="text-align:left;margin-bottom:16px;">Répartition des votes</div>
+      <div class="votes-row" id="rr-votes-row"></div>
+      <div class="gap-24"></div>
+
+      <div class="stack w100" id="rr-all-players"></div>
+      <div class="gap-80" style="height:100px;flex-shrink:0;"></div>
+    </div>
+  </div>
+  <div class="sticky-bottom">
+    <div id="rr-host-btn" style="display:none;">
+      <button class="btn btn-red" id="btn-next-round" onclick="nextRound()">Manche suivante →</button>
+    </div>
+    <div id="rr-guest-wait" style="display:none;text-align:center;">
+      <div class="t-sm">En attente du host...</div>
+      <div class="gap-8"></div>
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════
-     SCREEN 10 : FINAL PODIUM
+     SCREEN : PODIUM
 ══════════════════════════════════════════ -->
 <div class="screen" id="s-podium">
-  <div class="w100" style="max-width:400px;text-align:center;">
-    <div class="label" style="margin-bottom:8px;">Fin de partie</div>
-    <div class="title-lg" style="margin-bottom:32px;">Classement final</div>
-
-    <div class="podium" id="podium-display"></div>
-
-    <div class="stack" id="full-ranking"></div>
-
-    <div class="gap-40"></div>
+  <div style="width:100%;max-width:480px;margin:0 auto;">
+    <div style="padding:52px 20px 24px;text-align:center;">
+      <div class="t-xs" style="margin-bottom:8px;">FIN DE PARTIE</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:3px;">CLASSEMENT</div>
+    </div>
+    <div style="padding:0 20px;">
+      <div class="podium-wrap" id="podium-display" style="margin-bottom:32px;"></div>
+      <div class="stack" id="full-ranking"></div>
+      <div class="gap-120" style="height:120px;flex-shrink:0;"></div>
+    </div>
+  </div>
+  <div class="sticky-bottom">
     <button class="btn btn-outline-red" onclick="goHome()">Nouvelle partie</button>
   </div>
 </div>
 
 <script>
 // ══════════════════════════════════════════
-// CONFIG SUPABASE
+// SUPABASE CONFIG
 // ══════════════════════════════════════════
 const SUPABASE_URL = 'https://pyzazjxltmkwhhjcxnnu.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5emF6anhsdG1rd2hoamN4bm51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4OTU3MDAsImV4cCI6MjA5MzQ3MTcwMH0.S1_CsGBSdoCpcYdi9Q_E63UfbgtId8yBTvQtrneGgpQ';
@@ -585,40 +1097,61 @@ const api = async (path, opts = {}) => {
 };
 
 const db = {
-  get: (table, query='') => api(`${table}?${query}`),
-  post: (table, body) => api(table, { method:'POST', body: JSON.stringify(body) }),
-  patch: (table, query, body) => api(`${table}?${query}`, { method:'PATCH', body: JSON.stringify(body), prefer:'return=representation' }),
-  del: (table, query) => api(`${table}?${query}`, { method:'DELETE', prefer:'return=minimal' }),
+  get: (t, q='') => api(`${t}?${q}`),
+  post: (t, b) => api(t, { method:'POST', body:JSON.stringify(b) }),
+  patch: (t, q, b) => api(`${t}?${q}`, { method:'PATCH', body:JSON.stringify(b), prefer:'return=representation' }),
 };
+
+// ══════════════════════════════════════════
+// AVATARS
+// ══════════════════════════════════════════
+const AVATARS = ['/avatars/av1.png','/avatars/av2.png','/avatars/av3.png','/avatars/av4.png','/avatars/av5.png','/avatars/a6.png','/avatars/av7.png','/avatars/av8.png','/avatars/av9.png','/avatars/av10.png',];
+
+function renderAvatarGrid(gridId, stateKey) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = AVATARS.map((a, i) => `
+    <div class="avatar-opt ${state[stateKey] === a ? 'selected' : ''}"
+      onclick="selectAvatar('${gridId}','${stateKey}','${a}')">
+      ${a}
+    </div>
+  `).join('');
+}
+
+function selectAvatar(gridId, stateKey, avatar) {
+  state[stateKey] = avatar;
+  renderAvatarGrid(gridId, stateKey);
+}
 
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
 let state = {
-  roomId: null, roomCode: null, playerId: null, playerName: null,
-  isHost: false, role: null, currentRound: 0, roundCount: 5, liarCount: 1,
-  currentRoundId: null, currentQuestionId: null, selectedVoteTarget: null,
-  players: [], rolesConfirmed: 0, totalPlayers: 0, hasVoted: false
+  roomId:null, roomCode:null, playerId:null, playerName:null,
+  isHost:false, role:null, currentRound:0, roundCount:5, liarCount:1,
+  category:'soft', currentQuestionId:null, selectedVoteTarget:null,
+  players:[], hasVoted:false,
+  createAvatar: AVATARS[0], joinAvatar: AVATARS[0]
 };
-let realtimeSub = null;
-
-// Config steppers
-let cfgRounds = 5, cfgLiars = 1;
-const ROUNDS_OPTIONS = [3, 5, 7];
-let roundsIdx = 1;
+let pollTimer = null;
+let cfgRounds = 5, cfgLiars = 1, cfgRoundsIdx = 1;
+const ROUNDS_OPT = [3,5,7];
+let selectedCat = 'soft';
 
 // ══════════════════════════════════════════
 // UI HELPERS
 // ══════════════════════════════════════════
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  el.scrollTop = 0;
 }
 
-function showNotif(msg, isError = false) {
+function showNotif(msg, type='') {
   const n = document.getElementById('notif');
   n.textContent = msg;
-  n.className = 'notif' + (isError ? ' error' : '');
+  n.className = 'notif' + (type ? ' ' + type : '');
+  void n.offsetWidth;
   n.classList.add('show');
   setTimeout(() => n.classList.remove('show'), 2800);
 }
@@ -628,11 +1161,47 @@ function setLoading(show) {
 }
 
 // ══════════════════════════════════════════
+// RULES
+// ══════════════════════════════════════════
+function openRules() {
+  document.getElementById('rules-modal').classList.add('open');
+}
+function closeRules(e) {
+  if (e.target === document.getElementById('rules-modal')) {
+    document.getElementById('rules-modal').classList.remove('open');
+  }
+}
+function closeRulesBtn() {
+  document.getElementById('rules-modal').classList.remove('open');
+}
+
+// ══════════════════════════════════════════
+// SHARE
+// ══════════════════════════════════════════
+function shareApp() {
+  if (navigator.share) {
+    navigator.share({ title:'MITO', text:'Tout le monde parle. Quelqu\'un ment. 🎭', url:'https://mito-six.vercel.app' });
+  } else {
+    navigator.clipboard.writeText('https://mito-six.vercel.app').then(() => showNotif('Lien copié !', 'success'));
+  }
+}
+
+// ══════════════════════════════════════════
+// CATEGORY
+// ══════════════════════════════════════════
+function selectCat(cat) {
+  selectedCat = cat;
+  ['soft','spicy','hot'].forEach(c => {
+    document.getElementById('cat-' + c).classList.toggle('selected', c === cat);
+  });
+}
+
+// ══════════════════════════════════════════
 // CONFIG STEPPERS
 // ══════════════════════════════════════════
 function changeRounds(dir) {
-  roundsIdx = Math.max(0, Math.min(2, roundsIdx + dir));
-  cfgRounds = ROUNDS_OPTIONS[roundsIdx];
+  cfgRoundsIdx = Math.max(0, Math.min(2, cfgRoundsIdx + dir));
+  cfgRounds = ROUNDS_OPT[cfgRoundsIdx];
   document.getElementById('rounds-val').textContent = cfgRounds;
 }
 function changeLiars(dir) {
@@ -641,50 +1210,33 @@ function changeLiars(dir) {
 }
 
 // ══════════════════════════════════════════
-// GENERATE ROOM CODE
-// ══════════════════════════════════════════
-function genCode() {
-  return String(Math.floor(1000 + Math.random() * 9000));
-}
-
-// ══════════════════════════════════════════
 // CREATE GAME
 // ══════════════════════════════════════════
 async function createGame() {
   const name = document.getElementById('create-name').value.trim();
-  if (!name) { showNotif('Entre ton pseudo', true); return; }
-
-  document.getElementById('btn-create').disabled = true;
+  if (!name) { showNotif('Entre ton pseudo', 'error'); return; }
+  const btn = document.getElementById('btn-create');
+  btn.disabled = true;
   try {
-    const code = genCode();
+    const code = String(Math.floor(1000 + Math.random() * 9000));
     const playerId = crypto.randomUUID();
-
-    // Create room
     const [room] = await db.post('rooms', {
-      code, host_id: playerId,
-      round_count: cfgRounds, liar_count: cfgLiars,
-      status: 'lobby', current_round: 0
+      code, host_id:playerId,
+      round_count:cfgRounds, liar_count:cfgLiars,
+      status:'lobby', current_round:0, category:selectedCat
     });
-
-    // Create host player
     const [player] = await db.post('players', {
-      id: playerId, room_id: room.id,
-      name, is_host: true, score: 0, has_voted: false
+      id:playerId, room_id:room.id,
+      name, is_host:true, score:0, has_voted:false,
+      avatar:state.createAvatar
     });
-
-    state.roomId = room.id;
-    state.roomCode = code;
-    state.playerId = playerId;
-    state.playerName = name;
-    state.isHost = true;
-    state.roundCount = cfgRounds;
-    state.liarCount = cfgLiars;
-
+    state.roomId=room.id; state.roomCode=code;
+    state.playerId=playerId; state.playerName=name;
+    state.isHost=true; state.roundCount=cfgRounds;
+    state.liarCount=cfgLiars; state.category=selectedCat;
     enterLobby();
-  } catch(e) {
-    showNotif('Erreur : ' + e.message, true);
-  }
-  document.getElementById('btn-create').disabled = false;
+  } catch(e) { showNotif('Erreur : '+e.message,'error'); }
+  btn.disabled = false;
 }
 
 // ══════════════════════════════════════════
@@ -693,38 +1245,27 @@ async function createGame() {
 async function joinGame() {
   const name = document.getElementById('join-name').value.trim();
   const code = document.getElementById('join-code').value.trim();
-  if (!name) { showNotif('Entre ton pseudo', true); return; }
-  if (code.length !== 4) { showNotif('Code à 4 chiffres requis', true); return; }
-
-  document.getElementById('btn-join').disabled = true;
+  if (!name) { showNotif('Entre ton pseudo','error'); return; }
+  if (code.length !== 4) { showNotif('Code à 4 chiffres','error'); return; }
+  const btn = document.getElementById('btn-join');
+  btn.disabled = true;
   try {
-    const rooms = await db.get('rooms', `code=eq.${code}&status=eq.lobby`);
-    if (!rooms.length) { showNotif('Salle introuvable ou déjà commencée', true); document.getElementById('btn-join').disabled = false; return; }
+    const rooms = await db.get('rooms',`code=eq.${code}&status=eq.lobby`);
+    if (!rooms.length) { showNotif('Salle introuvable','error'); btn.disabled=false; return; }
     const room = rooms[0];
-
-    const players = await db.get('players', `room_id=eq.${room.id}`);
-    if (players.length >= 12) { showNotif('Salle complète (12 joueurs max)', true); document.getElementById('btn-join').disabled = false; return; }
-
-    const nameTaken = players.some(p => p.name.toLowerCase() === name.toLowerCase());
-    if (nameTaken) { showNotif('Ce pseudo est déjà pris', true); document.getElementById('btn-join').disabled = false; return; }
-
-    const [player] = await db.post('players', {
-      room_id: room.id, name, is_host: false, score: 0, has_voted: false
+    const players = await db.get('players',`room_id=eq.${room.id}`);
+    if (players.length >= 12) { showNotif('Salle complète','error'); btn.disabled=false; return; }
+    if (players.some(p => p.name.toLowerCase()===name.toLowerCase())) { showNotif('Pseudo déjà pris','error'); btn.disabled=false; return; }
+    const [player] = await db.post('players',{
+      room_id:room.id, name, is_host:false, score:0, has_voted:false, avatar:state.joinAvatar
     });
-
-    state.roomId = room.id;
-    state.roomCode = code;
-    state.playerId = player.id;
-    state.playerName = name;
-    state.isHost = false;
-    state.roundCount = room.round_count;
-    state.liarCount = room.liar_count;
-
+    state.roomId=room.id; state.roomCode=code;
+    state.playerId=player.id; state.playerName=name;
+    state.isHost=false; state.roundCount=room.round_count;
+    state.liarCount=room.liar_count; state.category=room.category||'soft';
     enterLobby();
-  } catch(e) {
-    showNotif('Erreur : ' + e.message, true);
-  }
-  document.getElementById('btn-join').disabled = false;
+  } catch(e) { showNotif('Erreur : '+e.message,'error'); }
+  btn.disabled = false;
 }
 
 // ══════════════════════════════════════════
@@ -735,142 +1276,97 @@ function enterLobby() {
   document.getElementById('host-actions').style.display = state.isHost ? '' : 'none';
   document.getElementById('guest-waiting').style.display = state.isHost ? 'none' : '';
   showScreen('s-lobby');
-  subscribeRealtime();
+  startPolling();
   refreshLobby();
 }
 
 async function refreshLobby() {
-  try {
-    const players = await db.get('players', `room_id=eq.${state.roomId}&order=joined_at.asc`);
-    state.players = players;
-    renderPlayerList(players);
-
-    const canStart = players.length >= 4;
-    const btnStart = document.getElementById('btn-start');
-    if (btnStart) {
-      btnStart.disabled = !canStart;
-      const hint = document.querySelector('#host-actions .body-sm');
-      if (hint) hint.textContent = canStart ? `${players.length} joueur${players.length>1?'s':''} prêt${players.length>1?'s':''}` : 'Minimum 4 joueurs pour démarrer';
-    }
-  } catch(e) { console.error(e); }
-}
-
-function renderPlayerList(players) {
-  const list = document.getElementById('player-list');
+  const players = await db.get('players',`room_id=eq.${state.roomId}&order=joined_at.asc`);
+  state.players = players;
   document.getElementById('player-count').textContent = players.length;
-  list.innerHTML = players.map(p => `
+  document.getElementById('player-list').innerHTML = players.map(p=>`
     <div class="player-item">
-      <div class="player-avatar">${p.name[0].toUpperCase()}</div>
-      <span class="player-name">${p.name}</span>
-      ${p.is_host ? '<span class="player-host">HOST</span>' : ''}
+      <div class="p-avatar">${p.avatar||'😎'}</div>
+      <span class="p-name">${p.name}</span>
+      ${p.is_host ? '<span class="p-host-badge">HOST</span>' : ''}
     </div>
   `).join('');
+  const canStart = players.length >= 4;
+  const btn = document.getElementById('btn-start');
+  if (btn) {
+    btn.disabled = !canStart;
+    document.getElementById('start-hint').textContent = canStart
+      ? `${players.length} joueur${players.length>1?'s':''} connecté${players.length>1?'s':''}`
+      : 'Minimum 4 joueurs pour démarrer';
+  }
 }
 
 // ══════════════════════════════════════════
-// REALTIME SUBSCRIPTION
+// POLLING
 // ══════════════════════════════════════════
-function subscribeRealtime() {
-  // Poll every 2s (WebSocket via fetch)
-  if (realtimeSub) clearInterval(realtimeSub);
-  realtimeSub = setInterval(pollGameState, 2000);
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(pollGameState, 2000);
 }
 
 async function pollGameState() {
   try {
-    const rooms = await db.get('rooms', `id=eq.${state.roomId}`);
+    const rooms = await db.get('rooms',`id=eq.${state.roomId}`);
     if (!rooms.length) return;
     const room = rooms[0];
+    const screen = document.querySelector('.screen.active')?.id;
 
-    // Lobby refresh
-    const currentScreen = document.querySelector('.screen.active')?.id;
-    if (currentScreen === 's-lobby') {
+    if (screen==='s-lobby') {
       await refreshLobby();
-      if (room.status === 'playing') {
-        await beginRound(room);
-      }
-    } else if (currentScreen === 's-waiting-roles') {
-      // Check if all confirmed (room status changed to playing w/ question shown)
-      const players = await db.get('players', `room_id=eq.${state.roomId}`);
-      state.players = players;
-      // Host reveals question after all players have their roles assigned
-      if (room.status === 'playing' && room.current_question_id) {
-        showQuestion(room);
-      }
-    } else if (currentScreen === 's-question') {
-      if (room.status === 'voting') {
-        showVoting();
-      }
-    } else if (currentScreen === 's-voting') {
-      const players = await db.get('players', `room_id=eq.${state.roomId}`);
-      const voted = players.filter(p => p.has_voted).length;
+      if (room.status==='playing') await beginRound(room);
+    } else if (screen==='s-waiting-roles') {
+      if (room.status==='playing' && room.current_question_id) showQuestion(room);
+    } else if (screen==='s-question') {
+      if (room.status==='voting') showVoting();
+    } else if (screen==='s-voting') {
+      const players = await db.get('players',`room_id=eq.${state.roomId}`);
+      const voted = players.filter(p=>p.has_voted).length;
       document.getElementById('votes-progress').textContent = `${voted} / ${players.length} ont voté`;
-      if (voted === players.length) {
-        showRoundResults(room);
-      }
-    } else if (currentScreen === 's-round-results') {
-      if (room.status === 'playing' && room.current_round > state.currentRound) {
+      if (voted===players.length) showRoundResults(room);
+    } else if (screen==='s-round-results') {
+      if (room.status==='playing' && room.current_round > state.currentRound) {
         state.currentRound = room.current_round;
         await beginRound(room);
-      } else if (room.status === 'finished') {
-        showPodium();
-      }
+      } else if (room.status==='finished') showPodium();
     }
-  } catch(e) { console.error('Poll error:', e); }
+  } catch(e) { console.error('Poll:',e); }
 }
 
 // ══════════════════════════════════════════
-// START GAME (HOST)
+// START GAME
 // ══════════════════════════════════════════
 async function startGame() {
   if (!state.isHost) return;
-  try {
-    document.getElementById('btn-start').disabled = true;
-    const players = await db.get('players', `room_id=eq.${state.roomId}`);
-    if (players.length < 4) { showNotif('Minimum 4 joueurs requis', true); return; }
-
-    await db.patch('rooms', `id=eq.${state.roomId}`, {
-      status: 'playing', current_round: 1
-    });
-
-    state.currentRound = 1;
-    state.players = players;
-    await assignRolesForRound(players);
-  } catch(e) {
-    showNotif('Erreur démarrage : ' + e.message, true);
-    document.getElementById('btn-start').disabled = false;
-  }
+  document.getElementById('btn-start').disabled = true;
+  const players = await db.get('players',`room_id=eq.${state.roomId}`);
+  if (players.length < 4) { showNotif('Minimum 4 joueurs','error'); return; }
+  state.players = players; state.currentRound = 1;
+  await db.patch('rooms',`id=eq.${state.roomId}`,{status:'playing',current_round:1});
+  await assignRoles(players);
 }
 
 // ══════════════════════════════════════════
 // ASSIGN ROLES
 // ══════════════════════════════════════════
-async function assignRolesForRound(players) {
-  // Shuffle players
-  const shuffled = [...players].sort(() => Math.random() - 0.5);
-  const liarCount = Math.min(state.liarCount, Math.floor(players.length / 2));
-
-  for (let i = 0; i < shuffled.length; i++) {
-    const role = i < liarCount ? 'lie' : 'truth';
-    await db.patch('players', `id=eq.${shuffled[i].id}`, { role, has_voted: false });
+async function assignRoles(players) {
+  const shuffled = [...players].sort(()=>Math.random()-0.5);
+  const liarCount = Math.min(state.liarCount, Math.floor(players.length/2));
+  for (let i=0;i<shuffled.length;i++) {
+    await db.patch('players',`id=eq.${shuffled[i].id}`,{role:i<liarCount?'lie':'truth',has_voted:false});
   }
-
-  // Pick a random question
-  const questions = await db.get('questions', 'used=eq.false&order=id&limit=50');
-  if (!questions.length) { showNotif('Plus de questions disponibles !', true); return; }
-  const q = questions[Math.floor(Math.random() * questions.length)];
-
-  // Create round record
-  const [round] = await db.post('rounds', {
-    room_id: state.roomId, round_number: state.currentRound, question_id: q.id
-  });
+  const cat = state.category || 'soft';
+  const questions = await db.get('questions',`category=eq.${cat}&order=id&limit=100`);
+  if (!questions.length) { showNotif('Plus de questions !','error'); return; }
+  const q = questions[Math.floor(Math.random()*questions.length)];
+  const [round] = await db.post('rounds',{room_id:state.roomId,round_number:state.currentRound,question_id:q.id});
   state.currentRoundId = round.id;
-
-  // Update room with question
-  await db.patch('rooms', `id=eq.${state.roomId}`, { current_question_id: q.id });
-
-  // Show role to host
-  const myPlayer = (await db.get('players', `id=eq.${state.playerId}`))[0];
+  await db.patch('rooms',`id=eq.${state.roomId}`,{current_question_id:q.id});
+  const myPlayer = (await db.get('players',`id=eq.${state.playerId}`))[0];
   showRoleReveal(myPlayer.role, q.text);
 }
 
@@ -880,9 +1376,9 @@ async function assignRolesForRound(players) {
 async function beginRound(room) {
   state.currentRound = room.current_round;
   state.currentQuestionId = room.current_question_id;
-  const myPlayer = (await db.get('players', `id=eq.${state.playerId}`))[0];
-  const questions = await db.get('questions', `id=eq.${state.currentQuestionId}`);
-  showRoleReveal(myPlayer.role, questions[0]?.text || '');
+  const myPlayer = (await db.get('players',`id=eq.${state.playerId}`))[0];
+  const qs = await db.get('questions',`id=eq.${state.currentQuestionId}`);
+  showRoleReveal(myPlayer.role, qs[0]?.text||'');
 }
 
 // ══════════════════════════════════════════
@@ -890,125 +1386,96 @@ async function beginRound(room) {
 // ══════════════════════════════════════════
 function showRoleReveal(role, questionText) {
   state.role = role;
-  state._pendingQuestion = questionText;
-
-  document.getElementById('role-round-badge').textContent = `Manche ${state.currentRound}`;
+  state._pendingQ = questionText;
+  document.getElementById('role-round-label').textContent = `MANCHE ${state.currentRound} / ${state.roundCount}`;
   const card = document.getElementById('role-card');
   const emoji = document.getElementById('role-emoji');
-  const label = document.getElementById('role-label');
-  const text = document.getElementById('role-text');
+  const big = document.getElementById('role-big-text');
   const instr = document.getElementById('role-instruction');
-
-  card.className = 'role-card reveal-anim ' + role;
-  emoji.textContent = role === 'lie' ? '◉' : '◯';
-  label.className = 'role-label ' + role;
-  label.textContent = role === 'lie' ? 'MENSONGE' : 'VÉRITÉ';
-  text.className = 'role-text ' + (role === 'lie' ? 'lie' : '');
-  text.textContent = role === 'lie' ? 'Tu mens.' : 'Tu dis la vérité.';
-  instr.textContent = role === 'lie'
-    ? 'Invente ou manipule ton récit. Sois crédible. Ne te fais pas prendre.'
-    : 'Réponds honnêtement. Reste naturel·le. Les menteurs t\'observent.';
-
+  if (role==='lie') {
+    card.className='role-reveal-card lie';
+    emoji.textContent='◉';
+    big.className='role-big lie'; big.textContent='MENTEUR';
+    instr.textContent='Invente. Manipule. Sois crédible. Ne te fais pas prendre.';
+  } else {
+    card.className='role-reveal-card truth';
+    emoji.textContent='◯';
+    big.className='role-big truth'; big.textContent='VÉRITÉ';
+    instr.textContent='Réponds honnêtement. Reste naturel·le. Méfie-toi des autres.';
+  }
   showScreen('s-role');
 }
 
-// ══════════════════════════════════════════
-// CONFIRM ROLE
-// ══════════════════════════════════════════
 async function confirmRole() {
   showScreen('s-waiting-roles');
-  // If host, show question screen after short delay once roles set
-  if (state.isHost) {
-    setTimeout(() => showQuestion({ current_question_id: state.currentQuestionId }), 1500);
-  }
+  if (state.isHost) setTimeout(()=>showQuestion({current_question_id:state.currentQuestionId}),1000);
 }
 
 // ══════════════════════════════════════════
-// SHOW QUESTION
+// QUESTION SCREEN
 // ══════════════════════════════════════════
 async function showQuestion(room) {
-  try {
-    const qId = room.current_question_id || state.currentQuestionId;
-    const questions = await db.get('questions', `id=eq.${qId}`);
-    const questionText = questions[0]?.text || state._pendingQuestion || '...';
-    document.getElementById('question-text').textContent = questionText;
-    document.getElementById('q-round-badge').textContent = `Manche ${state.currentRound}`;
-    document.getElementById('q-host-actions').style.display = state.isHost ? '' : 'none';
-    document.getElementById('q-guest-actions').style.display = state.isHost ? 'none' : '';
-    showScreen('s-question');
-  } catch(e) { console.error(e); }
+  const qId = room.current_question_id || state.currentQuestionId;
+  const qs = await db.get('questions',`id=eq.${qId}`);
+  const text = qs[0]?.text || state._pendingQ || '...';
+  document.getElementById('question-text').textContent = text;
+  document.getElementById('q-round-label').textContent = `Manche ${state.currentRound} / ${state.roundCount}`;
+  document.getElementById('q-player-count').textContent = state.players.length;
+  document.getElementById('q-progress').style.width = `${(state.currentRound/state.roundCount)*100}%`;
+  document.getElementById('q-host-btn').style.display = state.isHost ? '' : 'none';
+  document.getElementById('q-guest-msg').style.display = state.isHost ? 'none' : '';
+  showScreen('s-question');
 }
 
-// ══════════════════════════════════════════
-// START VOTING (HOST)
-// ══════════════════════════════════════════
 async function startVoting() {
   if (!state.isHost) return;
-  await db.patch('rooms', `id=eq.${state.roomId}`, { status: 'voting' });
+  await db.patch('rooms',`id=eq.${state.roomId}`,{status:'voting'});
   showVoting();
 }
 
 // ══════════════════════════════════════════
-// VOTING SCREEN
+// VOTING
 // ══════════════════════════════════════════
 async function showVoting() {
-  document.getElementById('v-round-badge').textContent = `Manche ${state.currentRound}`;
-  const players = await db.get('players', `room_id=eq.${state.roomId}&order=joined_at.asc`);
-  state.players = players;
-  state.selectedVoteTarget = null;
-  state.hasVoted = false;
-
-  const others = players.filter(p => p.id !== state.playerId);
-  document.getElementById('vote-list').innerHTML = others.map(p => `
+  const players = await db.get('players',`room_id=eq.${state.roomId}&order=joined_at.asc`);
+  state.players = players; state.selectedVoteTarget=null; state.hasVoted=false;
+  document.getElementById('v-round-label').textContent = `Manche ${state.currentRound} / ${state.roundCount}`;
+  document.getElementById('v-player-count').textContent = players.length;
+  document.getElementById('v-progress').style.width = `${(state.currentRound/state.roundCount)*100}%`;
+  const others = players.filter(p=>p.id!==state.playerId);
+  document.getElementById('vote-list').innerHTML = others.map(p=>`
     <div class="vote-item" id="vote-${p.id}" onclick="selectVote('${p.id}')">
-      <div class="check"></div>
-      <div class="player-avatar" style="width:32px;height:32px;font-size:12px;">${p.name[0].toUpperCase()}</div>
-      <span class="player-name">${p.name}</span>
+      <div class="vote-avatar">${p.avatar||'😎'}</div>
+      <span class="vote-name">${p.name}</span>
+      <div class="vote-check"></div>
     </div>
   `).join('');
-
-  const voted = players.filter(p => p.has_voted).length;
+  const voted = players.filter(p=>p.has_voted).length;
   document.getElementById('votes-progress').textContent = `${voted} / ${players.length} ont voté`;
   document.getElementById('btn-vote').disabled = true;
   showScreen('s-voting');
 }
 
-function selectVote(targetId) {
+function selectVote(id) {
   if (state.hasVoted) return;
-  document.querySelectorAll('.vote-item').forEach(el => el.classList.remove('selected'));
-  document.getElementById('vote-' + targetId)?.classList.add('selected');
-  state.selectedVoteTarget = targetId;
+  document.querySelectorAll('.vote-item').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('vote-'+id)?.classList.add('selected');
+  state.selectedVoteTarget = id;
   document.getElementById('btn-vote').disabled = false;
 }
 
 async function submitVote() {
   if (!state.selectedVoteTarget || state.hasVoted) return;
   document.getElementById('btn-vote').disabled = true;
-  try {
-    // Get current round
-    const rounds = await db.get('rounds', `room_id=eq.${state.roomId}&order=round_number.desc&limit=1`);
-    const round = rounds[0];
-
-    await db.post('votes', {
-      round_id: round.id,
-      voter_id: state.playerId,
-      target_id: state.selectedVoteTarget
-    });
-
-    await db.patch('players', `id=eq.${state.playerId}`, { has_voted: true });
-    state.hasVoted = true;
-    showNotif('Vote enregistré !');
-
-    // Check if all voted
-    const players = await db.get('players', `room_id=eq.${state.roomId}`);
-    const allVoted = players.every(p => p.has_voted);
-    if (allVoted) {
-      const room = (await db.get('rooms', `id=eq.${state.roomId}`))[0];
-      showRoundResults(room);
-    }
-  } catch(e) {
-    showNotif('Erreur vote : ' + e.message, true);
-    document.getElementById('btn-vote').disabled = false;
+  const rounds = await db.get('rounds',`room_id=eq.${state.roomId}&order=round_number.desc&limit=1`);
+  await db.post('votes',{round_id:rounds[0].id,voter_id:state.playerId,target_id:state.selectedVoteTarget});
+  await db.patch('players',`id=eq.${state.playerId}`,{has_voted:true});
+  state.hasVoted = true;
+  showNotif('Vote enregistré !','success');
+  const players = await db.get('players',`room_id=eq.${state.roomId}`);
+  if (players.every(p=>p.has_voted)) {
+    const room = (await db.get('rooms',`id=eq.${state.roomId}`))[0];
+    showRoundResults(room);
   }
 }
 
@@ -1016,139 +1483,111 @@ async function submitVote() {
 // ROUND RESULTS
 // ══════════════════════════════════════════
 async function showRoundResults(room) {
-  const players = await db.get('players', `room_id=eq.${state.roomId}&order=joined_at.asc`);
+  const players = await db.get('players',`room_id=eq.${state.roomId}&order=joined_at.asc`);
   state.players = players;
-
-  const rounds = await db.get('rounds', `room_id=eq.${state.roomId}&order=round_number.desc&limit=1`);
-  const round = rounds[0];
-  const votes = await db.get('votes', `round_id=eq.${round.id}`);
-
-  // Count votes per target
+  const rounds = await db.get('rounds',`room_id=eq.${state.roomId}&order=round_number.desc&limit=1`);
+  const votes = await db.get('votes',`round_id=eq.${rounds[0].id}`);
   const voteCounts = {};
-  votes.forEach(v => {
-    voteCounts[v.target_id] = (voteCounts[v.target_id] || 0) + 1;
-  });
+  votes.forEach(v=>{ voteCounts[v.target_id]=(voteCounts[v.target_id]||0)+1; });
+  const liars = players.filter(p=>p.role==='lie');
 
-  // Compute scores
-  const liars = players.filter(p => p.role === 'lie');
-  const truthers = players.filter(p => p.role === 'truth');
-
-  // Liars: +2 if not accused by majority
-  // Truth: +1 if they voted correctly for a liar
+  // Scores
   const scoreUpdates = {};
-  players.forEach(p => { scoreUpdates[p.id] = 0; });
-
+  players.forEach(p=>{ scoreUpdates[p.id]=0; });
   for (const liar of liars) {
-    const accusedVotes = voteCounts[liar.id] || 0;
-    const majorityThreshold = Math.ceil(players.length / 2);
-    if (accusedVotes < majorityThreshold) {
-      scoreUpdates[liar.id] += 2;
-    }
+    const accused = voteCounts[liar.id]||0;
+    if (accused < Math.ceil(players.length/2)) scoreUpdates[liar.id]+=2;
   }
-
-  votes.forEach(v => {
-    const target = players.find(p => p.id === v.target_id);
-    if (target && target.role === 'lie') {
-      scoreUpdates[v.voter_id] = (scoreUpdates[v.voter_id] || 0) + 1;
-    }
+  votes.forEach(v=>{
+    const target = players.find(p=>p.id===v.target_id);
+    if (target?.role==='lie') scoreUpdates[v.voter_id]=(scoreUpdates[v.voter_id]||0)+1;
   });
-
-  // Update scores in DB
   for (const p of players) {
-    if (scoreUpdates[p.id]) {
-      await db.patch('players', `id=eq.${p.id}`, { score: (p.score || 0) + scoreUpdates[p.id] });
-    }
+    if (scoreUpdates[p.id]) await db.patch('players',`id=eq.${p.id}`,{score:(p.score||0)+scoreUpdates[p.id]});
   }
 
-  // Render
-  document.getElementById('rr-round-badge').textContent = `Manche ${state.currentRound}`;
-  const liarNames = liars.map(l => l.name).join(', ');
-  document.getElementById('rr-headline').textContent = liars.length === 1 ? `${liarNames} mentait.` : `${liarNames} mentaient.`;
-  document.getElementById('rr-subline').textContent = `${liars.length} menteur${liars.length > 1 ? 's' : ''} cette manche.`;
+  // UI
+  document.getElementById('rr-round-label').textContent = `Résultats · Manche ${state.currentRound}`;
+  document.getElementById('rr-progress').style.width = `${(state.currentRound/state.roundCount)*100}%`;
 
-  document.getElementById('rr-player-list').innerHTML = players.map(p => {
-    const vCount = voteCounts[p.id] || 0;
-    const isLiar = p.role === 'lie';
-    return `
-      <div class="result-player-item ${isLiar ? 'liar' : ''}">
-        <div class="player-avatar" style="width:32px;height:32px;font-size:12px;">${p.name[0].toUpperCase()}</div>
-        <span class="player-name" style="flex:1;">${p.name}</span>
-        <span class="body-sm" style="margin-right:8px;">${vCount} vote${vCount>1?'s':''}</span>
-        <span class="role-badge ${isLiar ? 'lie' : 'truth'}">${isLiar ? 'MENSONGE' : 'VÉRITÉ'}</span>
-      </div>
-    `;
+  // Main liar (first one)
+  const mainLiar = liars[0] || players[0];
+  document.getElementById('rr-liar-avatar').textContent = mainLiar.avatar||'🎭';
+  document.getElementById('rr-liar-name').textContent = liars.length>1 ? liars.map(l=>l.name).join(' & ') : mainLiar.name;
+  document.getElementById('rr-role-text').textContent = liars.length>1 ? 'MENTEURS' : 'MENTEUR';
+
+  // Votes row
+  document.getElementById('rr-votes-row').innerHTML = players.map(p=>{
+    const vCount = voteCounts[p.id]||0;
+    const isLiar = p.role==='lie';
+    return `<div class="vote-count-item">
+      <div class="vote-count-avatar ${isLiar?'accused':''}">${p.avatar||'😎'}</div>
+      <div class="vote-count-num ${isLiar?'red':''}">${vCount}</div>
+    </div>`;
   }).join('');
 
-  // Host or last voter triggers results
-  const isLastRound = state.currentRound >= state.roundCount;
-  document.getElementById('rr-host-actions').style.display = state.isHost ? '' : 'none';
+  // All players
+  document.getElementById('rr-all-players').innerHTML = players.map(p=>`
+    <div class="result-player-row ${p.role==='lie'?'liar':''}">
+      <div style="font-size:26px;">${p.avatar||'😎'}</div>
+      <span style="flex:1;font-size:15px;font-weight:600;">${p.name}</span>
+      <span style="font-size:13px;color:var(--grey);margin-right:10px;">${voteCounts[p.id]||0} vote${(voteCounts[p.id]||0)>1?'s':''}</span>
+      <span class="role-pill ${p.role==='lie'?'lie':'truth'}">${p.role==='lie'?'MENTEUR':'VÉRITÉ'}</span>
+    </div>
+  `).join('');
+
+  const isLast = state.currentRound >= state.roundCount;
+  document.getElementById('rr-host-btn').style.display = state.isHost ? '' : 'none';
   document.getElementById('rr-guest-wait').style.display = state.isHost ? 'none' : '';
-
-  const btnNext = document.getElementById('btn-next-round');
-  if (btnNext) {
-    btnNext.textContent = isLastRound ? 'Voir le classement →' : 'Manche suivante →';
-    btnNext.onclick = isLastRound ? showPodium : nextRound;
-  }
-
+  const btn = document.getElementById('btn-next-round');
+  if (btn) { btn.textContent = isLast ? 'Voir le classement →' : 'Manche suivante →'; btn.onclick = isLast ? showPodium : nextRound; }
   showScreen('s-round-results');
 }
 
 // ══════════════════════════════════════════
-// NEXT ROUND (HOST)
+// NEXT ROUND
 // ══════════════════════════════════════════
 async function nextRound() {
   if (!state.isHost) return;
   state.currentRound++;
-  // Reset has_voted for all
-  const players = await db.get('players', `room_id=eq.${state.roomId}`);
-  for (const p of players) {
-    await db.patch('players', `id=eq.${p.id}`, { has_voted: false });
-  }
-  await db.patch('rooms', `id=eq.${state.roomId}`, {
-    status: 'playing', current_round: state.currentRound
-  });
+  const players = await db.get('players',`room_id=eq.${state.roomId}`);
+  for (const p of players) await db.patch('players',`id=eq.${p.id}`,{has_voted:false});
+  await db.patch('rooms',`id=eq.${state.roomId}`,{status:'playing',current_round:state.currentRound});
   state.players = players;
-  await assignRolesForRound(players);
+  await assignRoles(players);
 }
 
 // ══════════════════════════════════════════
-// FINAL PODIUM
+// PODIUM
 // ══════════════════════════════════════════
 async function showPodium() {
-  // Mark game finished
-  if (state.isHost) {
-    await db.patch('rooms', `id=eq.${state.roomId}`, { status: 'finished' });
-  }
+  if (state.isHost) await db.patch('rooms',`id=eq.${state.roomId}`,{status:'finished'});
+  const players = await db.get('players',`room_id=eq.${state.roomId}&order=score.desc`);
+  const sorted = [...players].sort((a,b)=>b.score-a.score);
 
-  const players = await db.get('players', `room_id=eq.${state.roomId}&order=score.desc`);
-  const sorted = players.sort((a, b) => b.score - a.score);
-
-  // Podium (top 3)
-  const podiumEl = document.getElementById('podium-display');
-  const top3 = sorted.slice(0, 3);
-  const positions = top3.length === 3 ? [top3[1], top3[0], top3[2]] : top3; // 2nd, 1st, 3rd
-
-  const heights = ['80px', '120px', '60px'];
-  const medals = ['🥈', '🥇', '🥉'];
-
-  podiumEl.innerHTML = positions.map((p, i) => p ? `
-    <div class="podium-block">
+  const podEl = document.getElementById('podium-display');
+  const top3 = sorted.slice(0,3);
+  // order: 2nd, 1st, 3rd
+  const display = top3.length===3 ? [top3[1],top3[0],top3[2]] : top3.length===2 ? [top3[1],top3[0]] : [top3[0]];
+  const heights = [80,120,60];
+  const medals = ['🥈','🥇','🥉'];
+  podEl.innerHTML = display.map((p,i)=>p?`
+    <div class="podium-col">
+      <div class="podium-avatar">${p.avatar||'😎'}</div>
       <div class="podium-name">${p.name}</div>
-      <div class="podium-bar" style="height:${heights[i]};${i===1?'background:var(--red);box-shadow:0 0 20px var(--red-glow)':''}"></div>
-      <div class="podium-pos">${medals[i]}</div>
+      <div class="podium-bar ${i===1?'first':''}" style="height:${heights[i]}px;"></div>
+      <div class="podium-medal">${medals[i]}</div>
     </div>
-  ` : '').join('');
+  `:'').join('');
 
-  // Full ranking
-  document.getElementById('full-ranking').innerHTML = sorted.map((p, i) => `
+  document.getElementById('full-ranking').innerHTML = sorted.map((p,i)=>`
     <div class="player-item">
-      <span style="font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:${i===0?'var(--red)':'var(--grey)'};width:24px;">${i+1}</span>
-      <div class="player-avatar" style="width:32px;height:32px;font-size:12px;">${p.name[0].toUpperCase()}</div>
-      <span class="player-name">${p.name}</span>
-      <span style="font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:var(--grey);">${p.score} pts</span>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${i===0?'var(--red)':'var(--grey2)'};width:28px;text-align:center;">${i+1}</span>
+      <div class="p-avatar">${p.avatar||'😎'}</div>
+      <span class="p-name">${p.name}</span>
+      <span style="font-size:13px;color:var(--grey);font-weight:600;">${p.score} pts</span>
     </div>
   `).join('');
-
   showScreen('s-podium');
 }
 
@@ -1156,13 +1595,11 @@ async function showPodium() {
 // GO HOME
 // ══════════════════════════════════════════
 function goHome() {
-  if (realtimeSub) clearInterval(realtimeSub);
-  state = {
-    roomId:null, roomCode:null, playerId:null, playerName:null,
-    isHost:false, role:null, currentRound:0, roundCount:5, liarCount:1,
-    currentRoundId:null, currentQuestionId:null, selectedVoteTarget:null,
-    players:[], rolesConfirmed:0, totalPlayers:0, hasVoted:false
-  };
+  if (pollTimer) clearInterval(pollTimer);
+  state = { roomId:null,roomCode:null,playerId:null,playerName:null,
+    isHost:false,role:null,currentRound:0,roundCount:5,liarCount:1,
+    category:'soft',currentQuestionId:null,selectedVoteTarget:null,
+    players:[],hasVoted:false,createAvatar:AVATARS[0],joinAvatar:AVATARS[0] };
   showScreen('s-home');
 }
 
@@ -1170,16 +1607,11 @@ function goHome() {
 // INIT
 // ══════════════════════════════════════════
 window.addEventListener('load', () => {
-  setTimeout(() => setLoading(false), 800);
+  renderAvatarGrid('create-avatar-grid','createAvatar');
+  renderAvatarGrid('join-avatar-grid','joinAvatar');
+  setTimeout(()=>setLoading(false), 900);
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 });
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js');
-  });
-}
 </script>
 </body>
 </html>
