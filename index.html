@@ -667,12 +667,12 @@ input::placeholder { color:var(--grey2); font-weight:400; }
    STICKY BOTTOM
 ══════════════════════════ */
 .sticky-bottom {
-  position:fixed; bottom:0; left:0; right:0;
+  position:sticky; bottom:0;
+  width:100%;
   padding:16px 20px 40px;
-  background:linear-gradient(to top, var(--black) 80%, transparent);
-  z-index:50;
-  max-width:480px;
-  margin:0 auto;
+  background:linear-gradient(to top, var(--black) 75%, transparent);
+  z-index:10;
+  flex-shrink:0;
 }
 </style>
 </head>
@@ -814,13 +814,13 @@ input::placeholder { color:var(--grey2); font-weight:400; }
 <!-- ══════════════════════════════════════════
      SCREEN : CREATE GAME
 ══════════════════════════════════════════ -->
-<div class="screen" id="s-create">
+<div class="screen" id="s-create" style="flex-direction:column;overflow:hidden;">
   <div class="top-bar" style="background:var(--black);position:relative;flex-shrink:0;">
     <button class="top-bar-icon" onclick="showScreen('s-home')">←</button>
     <div class="top-bar-center" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">NOUVELLE PARTIE</div>
     <div style="width:36px;"></div>
   </div>
-  <div class="scroll-content" style="padding-top:0;">
+  <div class="scroll-content" style="padding-top:0;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:16px;">
 
     <div class="gap-8"></div>
     <div class="t-xs w100">Ton avatar</div>
@@ -883,7 +883,6 @@ input::placeholder { color:var(--grey2); font-weight:400; }
         </div>
       </div>
     </div>
-    <div style="height:120px;flex-shrink:0;"></div>
   </div>
   <div class="sticky-bottom">
     <button class="btn btn-red" id="btn-create" onclick="createGame()">Créer la partie</button>
@@ -893,13 +892,13 @@ input::placeholder { color:var(--grey2); font-weight:400; }
 <!-- ══════════════════════════════════════════
      SCREEN : JOIN GAME
 ══════════════════════════════════════════ -->
-<div class="screen" id="s-join" style="overflow-y:auto;justify-content:flex-start;">
+<div class="screen" id="s-join" style="flex-direction:column;overflow:hidden;">
   <div class="top-bar" style="background:var(--black);">
     <button class="top-bar-icon" onclick="showScreen('s-home')">←</button>
     <div class="top-bar-center" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">REJOINDRE</div>
     <div style="width:36px;"></div>
   </div>
-  <div class="scroll-content" style="padding-top:0;padding-bottom:120px;">
+  <div class="scroll-content" style="padding-top:0;flex:1;overflow-y:auto;padding-bottom:24px;">
     <div class="gap-8"></div>
     <div class="t-xs w100">Ton avatar</div>
     <div class="gap-12"></div>
@@ -913,7 +912,6 @@ input::placeholder { color:var(--grey2); font-weight:400; }
     <div class="gap-8"></div>
     <input type="text" id="join-code" placeholder="0000" maxlength="4" class="code-input"
       oninput="this.value=this.value.replace(/\D/g,'')">
-    <div class="gap-40"></div>
   </div>
   <div class="sticky-bottom">
     <button class="btn btn-red" id="btn-join" onclick="joinGame()">Rejoindre</button>
