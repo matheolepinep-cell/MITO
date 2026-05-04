@@ -376,14 +376,14 @@ input::placeholder { color:var(--grey2); font-weight:400; }
   cursor:pointer; transition:all 0.2s;
   background:var(--bg2);
   overflow:hidden;
+  width:100%;
 }
 .avatar-opt img {
-  width:100%; height:100%; object-fit:cover; border-radius:50%;
+  width:100%; height:100%; object-fit:cover;
 }
 .avatar-opt.selected {
   border-color:var(--red);
   box-shadow:0 0 12px var(--red-glow);
-  background:rgba(255,59,59,0.1);
   transform:scale(1.06);
 }
 
@@ -669,8 +669,9 @@ input::placeholder { color:var(--grey2); font-weight:400; }
 .sticky-bottom {
   position:sticky; bottom:0;
   width:100%;
-  padding:16px 20px 40px;
-  background:linear-gradient(to top, var(--black) 75%, transparent);
+  padding:16px 20px 16px;
+  padding-bottom:max(16px, env(safe-area-inset-bottom));
+  background:var(--black);
   z-index:10;
   flex-shrink:0;
 }
@@ -794,21 +795,7 @@ input::placeholder { color:var(--grey2); font-weight:400; }
 
   <div class="gap-24"></div>
 
-  <div class="home-features">
-    <div class="home-feature">
-      <div class="home-feature-icon">👥</div>
-      <div class="home-feature-label">Entre<br>amis</div>
-    </div>
-    <div class="home-feature">
-      <div class="home-feature-icon">⚡</div>
-      <div class="home-feature-label">Facile<br>à jouer</div>
-    </div>
-    <div class="home-feature">
-      <div class="home-feature-icon">❓</div>
-      <div class="home-feature-label">Centaines<br>de questions</div>
-    </div>
-  </div>
-  <div class="gap-40"></div>
+
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -820,7 +807,7 @@ input::placeholder { color:var(--grey2); font-weight:400; }
     <div class="top-bar-center" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;">NOUVELLE PARTIE</div>
     <div style="width:36px;"></div>
   </div>
-  <div class="scroll-content" style="padding-top:0;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:16px;">
+  <div class="scroll-content" style="padding-top:0;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:24px;">
 
     <div class="gap-8"></div>
     <div class="t-xs w100">Ton avatar</div>
@@ -1153,7 +1140,7 @@ const db = {
 // ══════════════════════════════════════════
 // AVATARS
 // ══════════════════════════════════════════
-const AVATARS = ['😎','🦊','🐺','🦁','🐯','🦅','🐻','🦋','🐸','🦄','🎭','👻','🤖','👽','🧠','🐲','🦈','🐙','🦉','🦇'];
+const AVATARS = ['/avatars/av1.png','/avatars/av2.png','/avatars/av3.png','/avatars/av4.png','/avatars/av5.png','/avatars/av6.png','/avatars/av7.png','/avatars/av8.png','/avatars/av9.png','/avatars/av10.png'];
 
 
 function avatarHtml(avatar, size='36px', fontSize='22px') {
