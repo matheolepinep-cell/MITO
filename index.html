@@ -675,7 +675,11 @@ async function confirmRole(){
 async function showQuestion(room){
   const qId=room.current_question_id||state.currentQuestionId;
   const qs=await db.get('questions',`id=eq.${qId}`);
-  document.getElementById('question-text').textContent=qs[0]?.text||state._pendingQ||'...';
+  const rawText = (qs[0]?.text || state._pendingQ || '...').toUpperCase();
+const words = rawText.split(' ');
+const last = words.pop();
+const rest = words.join(' ');
+document.getElementById('question-text').innerHTML = `${rest} <span style="color:var(--red);text-shadow:0 0 12px var(--red-glow);">${last}</span>`;
   const rc=state.roundCount==='∞'?'∞':state.roundCount;
   document.getElementById('q-round-label').textContent=`Manche ${state.currentRound}/${rc}`;
   document.getElementById('q-player-count').textContent=`${state.players.length} joueurs`;
@@ -706,7 +710,10 @@ async function skipQuestion(){
   await db.patch('rooms',`id=eq.${state.roomId}`,{current_question_id:q.id,status:'question_changed'});
   await db.patch('rooms',`id=eq.${state.roomId}`,{status:'playing'});
   state.currentQuestionId=q.id;
-  document.getElementById('question-text').textContent=q.text;
+  const rawSkip = q.text.toUpperCase();
+const wordsSkip = rawSkip.split(' ');
+const lastSkip = wordsSkip.pop();
+document.getElementById('question-text').innerHTML = `${wordsSkip.join(' ')} <span style="color:var(--red);text-shadow:0 0 12px var(--red-glow);">${lastSkip}</span>`;
   showNotif('Question changée !','success');
 }
 
