@@ -1060,9 +1060,13 @@ async function startSoloGame() {
   soloState.usedQuestionIds = new Set();
 
   // Assignation des rôles
-  const shuffled = [...names].sort(() => Math.random() - 0.5);
-  const liarCount = Math.min(cfgLiars, Math.floor(names.length / 2));
-  soloState.players = shuffled.map((name, i) => ({
+ const shuffled = [...names];
+for(let i = shuffled.length-1; i > 0; i--){
+  const j = Math.floor(Math.random()*(i+1));
+  [shuffled[i],shuffled[j]] = [shuffled[j],shuffled[i]];
+}
+const liarCount = Math.min(cfgLiars, Math.floor(names.length / 2));
+soloState.players = shuffled.map((name, i) => ({
     name: name,
     role: i < liarCount ? 'lie' : 'truth',
     alive: true,
@@ -1281,7 +1285,6 @@ window.addEventListener('load',function(){
       <div class="t-xs" style="margin-bottom:8px;">Passe le téléphone à</div>
       <div class="player-turn-name" id="solo-pass-name">Alex</div>
       <div class="g16"></div>
-      <div style="font-size:13px;color:var(--grey);">Entre ton prénom et appuie sur le bouton</div>
     </div>
     <div class="g32"></div>
     <div style="width:100%;max-width:340px;">
