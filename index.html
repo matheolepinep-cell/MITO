@@ -170,6 +170,21 @@ input::placeholder{color:var(--grey2);font-weight:400;}
 .podium-bar{width:100%;border-radius:8px 8px 0 0;background:var(--bg3);}
 .podium-bar.first{background:var(--red);box-shadow:0 0 20px var(--red-glow);}
 .room-code{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,20vw,96px);letter-spacing:16px;}
+
+/* MODE TOGGLE */
+.mode-toggle{display:flex;background:var(--bg2);border-radius:100px;padding:4px;gap:4px;width:100%;}
+.mode-btn{flex:1;padding:10px;border:none;border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;color:var(--grey);}
+.mode-btn.active{background:var(--red);color:#fff;box-shadow:0 0 12px var(--red-glow-sm);}
+
+/* PASS PHONE */
+.pass-card{width:100%;max-width:360px;padding:40px 28px;border-radius:28px;background:var(--bg2);border:1px solid var(--bg3);text-align:center;display:flex;flex-direction:column;align-items:center;}
+.pass-card.lie{background:rgba(255,59,59,.07);border-color:var(--red);box-shadow:0 0 40px rgba(255,59,59,.1);}
+.player-turn-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,10vw,48px);letter-spacing:2px;color:var(--white);}
+
+/* ELIMINATED */
+.eliminated-badge{padding:6px 16px;border-radius:100px;background:var(--bg3);color:var(--grey2);font-size:12px;font-weight:700;letter-spacing:1px;text-decoration:line-through;}
+.alive-badge{padding:6px 16px;border-radius:100px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);color:#2ECC71;font-size:12px;font-weight:700;letter-spacing:1px;}
+
 .waiting-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:40px 24px;}
 
 /* TIMER VOTE */
@@ -245,12 +260,29 @@ input::placeholder{color:var(--grey2);font-weight:400;}
     <div style="width:36px;"></div>
   </div>
   <div class="content">
+    <div class="t-xs" style="margin-bottom:12px;">Mode de jeu</div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-multi" onclick="setMode('multi')">Multijoueur</button>
+      <button class="mode-btn" id="mode-solo" onclick="setMode('solo')">1 téléphone</button>
+    </div>
+    <div class="g20"></div>
+    <!-- SECTION MULTI -->
+    <div id="section-multi">
     <div class="t-xs">Ton avatar</div><div class="g12"></div>
     <div class="avatar-grid" id="create-avatar-grid"></div>
     <div class="g20"></div>
     <div class="t-xs">Ton pseudo</div><div class="g8"></div>
     <input type="text" id="create-name" placeholder="Ex: Alex" maxlength="16">
     <div class="g20"></div>
+    </div><!-- /section-multi -->
+    <!-- SECTION SOLO -->
+    <div id="section-solo" style="display:none;">
+    <div class="t-xs">Joueurs (écris leurs noms)</div><div class="g12"></div>
+    <div id="solo-player-inputs" class="stack"></div>
+    <div class="g12"></div>
+    <button class="btn btn-dark" style="padding:12px;font-size:14px;" onclick="addSoloPlayer()">+ Ajouter un joueur</button>
+    <div class="g20"></div>
+    </div><!-- /section-solo -->
     <div class="t-xs">Catégorie de questions</div><div class="g12"></div>
     <div class="stack">
       <div class="cat-card selected" id="cat-soft" onclick="selectCat('soft')">
@@ -339,7 +371,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
     <div class="player-list" id="player-list"></div>
     <div class="g32"></div>
     <div id="host-actions">
-      <div class="t-sm t-center" id="start-hint" style="margin-bottom:12px;">Minimum 3 joueurs pour démarrer</div>
+      <div class="t-sm t-center" id="start-hint" style="margin-bottom:12px;">Minimum 4 joueurs pour démarrer</div>
       <button class="btn btn-red" id="btn-start" onclick="startGame()" disabled>Lancer la partie</button>
     </div>
     <div id="guest-waiting" style="display:none;text-align:center;">
@@ -519,17 +551,14 @@ function soundMVP(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f,
 let chronoInterval=null;
 function startChronoSound(){
   stopChronoSound();
-  let isTic=true;
-  chronoInterval=setInterval(function(){
-    if(isTic){
-      // TIC - aigu
-      playTone(1200,.04,'square',.18);
-    } else {
-      // TAC - légèrement plus grave et doux
-      playTone(900,.04,'square',.13);
-    }
-    isTic=!isTic;
-  },600);
+  let tick=0;
+  chronoInterval=setInterval(()=>{
+    tick++;
+    // Accélère et monte en fréquence avec le temps
+    const freq=300+tick*8;
+    const vol=Math.min(.15+tick*.005,.3);
+    playTone(Math.min(freq,800),.05,'square',vol);
+  },1000);
 }
 function stopChronoSound(){if(chronoInterval){clearInterval(chronoInterval);chronoInterval=null;}}
 
@@ -604,6 +633,7 @@ function changeLiars(dir){cfgLiars=Math.max(1,Math.min(4,cfgLiars+dir));document
 
 // ── CREATE GAME ───────────────────────────────────────────────────────────
 async function createGame(){
+  if(soloMode){ await startSoloGame(); return; }
   const name=document.getElementById('create-name').value.trim();
   if(!name){showNotif('Entre ton pseudo','error');return;}
   const btn=document.getElementById('btn-create');btn.disabled=true;
@@ -662,9 +692,9 @@ async function refreshLobby(){
   document.getElementById('player-list').innerHTML=players.map(function(p){
     return '<div class="player-item"><div class="p-avatar">'+avatarHtml(p.avatar,'44px')+'</div><span class="p-name">'+p.name+'</span>'+(p.is_host?'<span class="p-host">HOST</span>':'')+'</div>';
   }).join('');
-  const canStart=players.length>=3;
+  const canStart=players.length>=4;
   const btn=document.getElementById('btn-start');
-  if(btn){btn.disabled=!canStart;document.getElementById('start-hint').textContent=canStart?players.length+' joueurs connectés':'Minimum 3 joueurs pour démarrer';}
+  if(btn){btn.disabled=!canStart;document.getElementById('start-hint').textContent=canStart?players.length+' joueurs connectés':'Minimum 4 joueurs pour démarrer';}
 }
 
 // ── POLLING ───────────────────────────────────────────────────────────────
@@ -716,7 +746,7 @@ async function startGame(){
   if(!state.isHost)return;
   document.getElementById('btn-start').disabled=true;
   const players=await db.get('players','room_id=eq.'+state.roomId);
-  if(players.length<3){showNotif('Minimum 3 joueurs','error');return;}
+  if(players.length<4){showNotif('Minimum 4 joueurs','error');return;}
   state.players=players;state.currentRound=1;
   await db.patch('rooms','id=eq.'+state.roomId,{status:'playing',current_round:1});
   await assignRoles(players);
@@ -820,7 +850,7 @@ async function skipQuestion(){
   usedIds.add(state.currentQuestionId);
   let pool=allQ.filter(function(q){return !usedIds.has(q.id);});
   if(!pool.length)pool=allQ.filter(function(q){return q.id!==state.currentQuestionId;});
-  if(!pool.length){showNotif('Plus d\'autres questions !','error');return;}
+  if(!pool.length){showNotif("Plus d'autres questions !",'error');return;}
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;}
   const q=pool[0];
   // Mettre à jour le round ET la room
@@ -906,7 +936,7 @@ async function showRoundResults(room){
   document.getElementById('rr-guest-wait').style.display=state.isHost?'none':'';
   const btn=document.getElementById('btn-next-round');
   if(btn){
-    btn.textContent=isLast?'Voir le classement →':'Manche suivante →';
+    btn.textContent=isLast?'Voir le classement →':"Manche suivante →";
     btn.onclick=isLast?triggerEndGame:nextRound;
   }
   showScreen('s-round-results');
@@ -982,9 +1012,255 @@ function goHome(){
   showScreen('s-home');
 }
 
+
+// ══════════════════════════════════════════
+// MODE SOLO — 1 TÉLÉPHONE
+// ══════════════════════════════════════════
+let soloMode = false;
+let soloState = {
+  players: [],        // [{name, role, avatar, alive}]
+  currentPlayerIdx: 0,
+  currentRound: 0,
+  questions: [],
+  usedQuestionIds: new Set(),
+  currentQuestion: null,
+  selectedEliminate: null,
+  liarCount: 1,
+  category: 'soft'
+};
+
+function setMode(mode) {
+  soloMode = mode === 'solo';
+  document.getElementById('mode-multi').classList.toggle('active', !soloMode);
+  document.getElementById('mode-solo').classList.toggle('active', soloMode);
+  document.getElementById('section-multi').style.display = soloMode ? 'none' : '';
+  document.getElementById('section-solo').style.display = soloMode ? '' : 'none';
+}
+
+// Inputs joueurs solo
+let soloPlayerCount = 0;
+function addSoloPlayer() {
+  soloPlayerCount++;
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  div.innerHTML = '<input type="text" placeholder="Prénom du joueur ' + soloPlayerCount + '" maxlength="16" style="flex:1;">' +
+    '<button onclick="this.parentNode.remove()" style="width:36px;height:36px;border-radius:50%;background:var(--bg3);border:none;color:var(--grey);font-size:18px;cursor:pointer;flex-shrink:0;">×</button>';
+  document.getElementById('solo-player-inputs').appendChild(div);
+}
+
+// Lancer la partie solo
+async function startSoloGame() {
+  const inputs = document.querySelectorAll('#solo-player-inputs input');
+  const names = Array.from(inputs).map(i => i.value.trim()).filter(n => n.length > 0);
+  if (names.length < 3) { showNotif('Minimum 3 joueurs', 'error'); return; }
+
+  soloState.liarCount = cfgLiars;
+  soloState.category = selectedCat;
+  soloState.currentRound = 1;
+  soloState.usedQuestionIds = new Set();
+
+  // Assignation des rôles
+  const shuffled = [...names].sort(() => Math.random() - 0.5);
+  const liarCount = Math.min(cfgLiars, Math.floor(names.length / 2));
+  soloState.players = shuffled.map((name, i) => ({
+    name: name,
+    role: i < liarCount ? 'lie' : 'truth',
+    alive: true,
+    idx: i
+  }));
+
+  // Charger les questions
+  const allQ = await db.get('questions', 'category=eq.' + selectedCat + '&limit=200');
+  soloState.questions = allQ;
+
+  // Commencer le passage du téléphone
+  soloState.currentPlayerIdx = 0;
+  soloShowPass();
+}
+
+function soloShowPass() {
+  const player = soloState.players[soloState.currentPlayerIdx];
+  const total = soloState.players.length;
+  const idx = soloState.currentPlayerIdx + 1;
+  document.getElementById('solo-pass-step').textContent = 'JOUEUR ' + idx + ' / ' + total;
+  document.getElementById('solo-pass-name').textContent = player.name.toUpperCase();
+  document.getElementById('solo-pass-card').className = 'pass-card';
+  showScreen('s-solo-pass');
+}
+
+function soloRevealRole() {
+  const player = soloState.players[soloState.currentPlayerIdx];
+  const card = document.getElementById('solo-role-card');
+  const emoji = document.getElementById('solo-role-emoji');
+  const text = document.getElementById('solo-role-text');
+  const instr = document.getElementById('solo-role-instr');
+  document.getElementById('solo-role-step').textContent = player.name.toUpperCase();
+  if (player.role === 'lie') {
+    card.className = 'pass-card lie';
+    emoji.textContent = '◉';
+    text.className = 'role-big lie'; text.textContent = 'MENTEUR';
+    instr.textContent = "Tu mens toute la partie. Sois crédible. Évite de te faire éliminer.";
+  } else {
+    card.className = 'pass-card';
+    emoji.textContent = '◯';
+    text.className = 'role-big truth'; text.textContent = 'VÉRITÉ';
+    instr.textContent = "Tu dis la vérité. Détecte les menteurs avant qu'ils ne te manipulent.";
+  }
+  showScreen('s-solo-role');
+}
+
+function soloNextPlayer() {
+  soloState.currentPlayerIdx++;
+  if (soloState.currentPlayerIdx >= soloState.players.length) {
+    // Tout le monde a vu son rôle → première question
+    soloLoadQuestion();
+  } else {
+    // Overlay noir entre joueurs
+    showSuspense(function() { soloShowPass(); }, 'PASSE LE TÉLÉPHONE', 1500);
+  }
+}
+
+async function soloLoadQuestion() {
+  const pool = soloState.questions.filter(q => !soloState.usedQuestionIds.has(q.id));
+  const finalPool = pool.length ? pool : soloState.questions;
+  const shuffled = [...finalPool];
+  for (let i = shuffled.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  const q = shuffled[0];
+  soloState.currentQuestion = q;
+  soloState.usedQuestionIds.add(q.id);
+
+  const alive = soloState.players.filter(p => p.alive);
+  const rc = soloState.questions.length;
+  document.getElementById('sq-round-label').textContent = 'Manche ' + soloState.currentRound;
+  document.getElementById('sq-alive-count').textContent = alive.length + ' joueurs';
+  document.getElementById('sq-progress').style.width = Math.min((soloState.currentRound / 10) * 100, 100) + '%';
+
+  const words = q.text.toUpperCase().split(' ');
+  const last = words.pop();
+  document.getElementById('solo-question-text').innerHTML = words.join(' ') + ' <span style="color:var(--red);text-shadow:0 0 12px var(--red-glow);">' + last + '</span>';
+  showScreen('s-solo-question');
+}
+
+async function soloSkipQuestion() {
+  const pool = soloState.questions.filter(q => !soloState.usedQuestionIds.has(q.id) && q.id !== soloState.currentQuestion?.id);
+  if (!pool.length) { showNotif('Plus de questions !', 'error'); return; }
+  const shuffled = [...pool];
+  for (let i = shuffled.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]; }
+  const q = shuffled[0];
+  soloState.currentQuestion = q;
+  soloState.usedQuestionIds.add(q.id);
+  const words = q.text.toUpperCase().split(' ');
+  const last = words.pop();
+  document.getElementById('solo-question-text').innerHTML = words.join(' ') + ' <span style="color:var(--red);text-shadow:0 0 12px var(--red-glow);">' + last + '</span>';
+  showNotif('Question changée !', 'success');
+}
+
+function soloStartVote() {
+  const alive = soloState.players.filter(p => p.alive);
+  soloState.selectedEliminate = null;
+  document.getElementById('sv-round-label').textContent = 'Manche ' + soloState.currentRound;
+  document.getElementById('sv-progress').style.width = Math.min((soloState.currentRound / 10) * 100, 100) + '%';
+  document.getElementById('solo-vote-list').innerHTML = alive.map(function(p) {
+    return '<div class="vote-item" id="svote-' + p.idx + '" onclick="soloSelectEliminate(' + p.idx + ')">' +
+      '<span style="font-size:32px;">👤</span>' +
+      '<span style="font-size:16px;font-weight:600;flex:1;">' + p.name + '</span>' +
+      '<div class="vote-check"></div></div>';
+  }).join('');
+  document.getElementById('solo-btn-eliminate').disabled = true;
+  showScreen('s-solo-vote');
+  startChronoSound();
+}
+
+function soloSelectEliminate(idx) {
+  soloState.selectedEliminate = idx;
+  document.querySelectorAll('.vote-item').forEach(el => el.classList.remove('selected'));
+  const el = document.getElementById('svote-' + idx);
+  if (el) el.classList.add('selected');
+  document.getElementById('solo-btn-eliminate').disabled = false;
+}
+
+function soloEliminate() {
+  stopChronoSound();
+  if (soloState.selectedEliminate === null) return;
+  const player = soloState.players[soloState.selectedEliminate];
+  player.alive = false;
+
+  // Révéler le rôle
+  const isLiar = player.role === 'lie';
+  const ring = document.getElementById('sr-avatar');
+  ring.innerHTML = '<span style="font-size:72px;">👤</span>';
+  ring.style.cssText = isLiar
+    ? 'width:160px;height:160px;border-radius:50%;border:3px solid var(--red);box-shadow:0 0 0 8px rgba(255,59,59,.1),0 0 40px var(--red-glow);display:flex;align-items:center;justify-content:center;margin:0 auto;'
+    : 'width:160px;height:160px;border-radius:50%;border:3px solid var(--bg3);display:flex;align-items:center;justify-content:center;margin:0 auto;';
+
+  document.getElementById('sr-name').textContent = player.name;
+  document.getElementById('sr-role-text').textContent = isLiar ? 'MENTEUR' : 'VÉRITÉ';
+  document.getElementById('sr-role-text').style.color = isLiar ? 'var(--red)' : 'var(--white)';
+
+  soundRevealResults();
+
+  // Vérifier condition de victoire
+  const alive = soloState.players.filter(p => p.alive);
+  const aliveliars = alive.filter(p => p.role === 'lie');
+  const aliveTruths = alive.filter(p => p.role === 'truth');
+  const liarsWin = aliveliars.length >= aliveTruths.length;
+  const truthsWin = aliveliars.length === 0;
+  const gameOver = liarsWin || truthsWin;
+
+  const statusEl = document.getElementById('sr-game-status');
+  const nextBtn = document.getElementById('sr-next-btn');
+
+  if (gameOver) {
+    if (truthsWin) {
+      statusEl.innerHTML = '<div style="color:#2ECC71;font-weight:700;font-size:15px;margin-bottom:8px;">Les vérités ont gagné !</div><div style="font-size:13px;color:var(--grey);">Tous les menteurs ont été éliminés.</div>';
+    } else {
+      statusEl.innerHTML = '<div style="color:var(--red);font-weight:700;font-size:15px;margin-bottom:8px;">Les menteurs ont gagné !</div><div style="font-size:13px;color:var(--grey);">Ils représentent la majorité des survivants.</div>';
+    }
+    nextBtn.textContent = "Voir le résultat final";
+    nextBtn.onclick = function() { soloEndGame(truthsWin); };
+  } else {
+    statusEl.innerHTML = '<div style="font-size:14px;font-weight:600;margin-bottom:8px;">Survivants : ' + alive.length + ' joueurs</div>' +
+      alive.map(p => '<span style="display:inline-block;margin:3px;padding:4px 10px;border-radius:100px;background:var(--bg3);font-size:12px;font-weight:600;">' + p.name + '</span>').join('');
+    nextBtn.textContent = "Manche suivante →";
+    nextBtn.onclick = soloNextRound;
+  }
+
+  showScreen('s-solo-result');
+}
+
+function soloNextRound() {
+  soloState.currentRound++;
+  soloLoadQuestion();
+}
+
+function soloEndGame(truthsWin) {
+  const trophy = document.getElementById('se-trophy');
+  const winner = document.getElementById('se-winner-team');
+  if (truthsWin) {
+    trophy.textContent = '🛡️';
+    winner.textContent = 'LES VÉRITÉS';
+    winner.style.color = '#fff';
+  } else {
+    trophy.textContent = '🎭';
+    winner.textContent = 'LES MENTEURS';
+    winner.style.color = 'var(--red)';
+  }
+  const liars = soloState.players.filter(p => p.role === 'lie');
+  const summary = document.getElementById('se-summary');
+  summary.innerHTML = '<div style="font-size:13px;color:var(--grey);margin-bottom:8px;">Les menteurs étaient :</div>' +
+    liars.map(p => '<div style="font-size:15px;font-weight:700;color:var(--red);">' + p.name + '</div>').join('');
+  soundMVP();
+  showScreen('s-solo-end');
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 window.addEventListener('load',function(){
   renderAvatarGrid('create-avatar-grid','createAvatar');
+  // 2 joueurs par défaut en mode solo
+  addSoloPlayer(); addSoloPlayer(); addSoloPlayer();
   renderAvatarGrid('join-avatar-grid','joinAvatar');
   setTimeout(function(){
     setLoading(false);
@@ -995,5 +1271,110 @@ window.addEventListener('load',function(){
   if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
 });
 </script>
+
+<!-- SOLO: PASSAGE DU TÉLÉPHONE -->
+<div class="screen" id="s-solo-pass">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;width:100%;">
+    <div class="t-xs" id="solo-pass-step" style="margin-bottom:32px;">JOUEUR 1 / 5</div>
+    <div class="pass-card" id="solo-pass-card">
+      <div style="font-size:48px;margin-bottom:16px;" id="solo-pass-emoji">📱</div>
+      <div class="t-xs" style="margin-bottom:8px;">Passe le téléphone à</div>
+      <div class="player-turn-name" id="solo-pass-name">Alex</div>
+      <div class="g16"></div>
+      <div style="font-size:13px;color:var(--grey);">Entre ton prénom et appuie sur le bouton</div>
+    </div>
+    <div class="g32"></div>
+    <div style="width:100%;max-width:340px;">
+      <button class="btn btn-red" onclick="soloRevealRole()">Voir mon rôle →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SOLO: RÉVÉLATION DU RÔLE -->
+<div class="screen" id="s-solo-role">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;width:100%;">
+    <div class="t-xs" id="solo-role-step" style="margin-bottom:32px;">TON RÔLE</div>
+    <div class="pass-card truth" id="solo-role-card" style="max-width:340px;width:100%;">
+      <div style="font-size:56px;margin-bottom:20px;" id="solo-role-emoji">◯</div>
+      <div class="t-xs" style="margin-bottom:8px;">TON RÔLE</div>
+      <div class="role-big truth" id="solo-role-text">VÉRITÉ</div>
+      <div class="g16"></div>
+      <div class="t-sm" id="solo-role-instr"></div>
+    </div>
+    <div class="g32"></div>
+    <div class="t-xs" style="margin-bottom:20px;">Mémorise et passe au suivant</div>
+    <div style="width:100%;max-width:340px;">
+      <button class="btn btn-red" onclick="soloNextPlayer()">J'ai mémorisé →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SOLO: QUESTION -->
+<div class="screen" id="s-solo-question">
+  <div style="width:100%;padding:52px 20px 12px;flex-shrink:0;">
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+      <div class="t-sm" id="sq-round-label">Manche 1</div>
+      <div class="t-sm" id="sq-alive-count">5 joueurs</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-fill" id="sq-progress" style="width:20%;"></div></div>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px;">
+    <div class="t-question t-center" id="solo-question-text">Chargement...</div>
+  </div>
+  <div style="width:100%;padding:16px 20px 48px;flex-shrink:0;">
+    <button class="btn btn-red" onclick="soloStartVote()">Passer au vote</button>
+    <div class="g12"></div>
+    <button class="btn btn-outline" onclick="soloSkipQuestion()">Passer la question</button>
+  </div>
+</div>
+
+<!-- SOLO: VOTE -->
+<div class="screen" id="s-solo-vote">
+  <div style="width:100%;padding:52px 20px 12px;flex-shrink:0;">
+    <div style="margin-bottom:10px;"><div class="t-sm" id="sv-round-label">Manche 1</div></div>
+    <div class="progress-wrap"><div class="progress-fill" id="sv-progress" style="width:40%;"></div></div>
+  </div>
+  <div class="content" style="padding-top:16px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1.5px;">Qui éliminer ?</div>
+    <div class="g4"></div>
+    <div class="t-sm">Discussion, puis votez à l'oral. Le host valide.</div>
+    <div class="g20"></div>
+    <div class="stack" id="solo-vote-list"></div>
+    <div class="g24"></div>
+    <button class="btn btn-red" id="solo-btn-eliminate" onclick="soloEliminate()" disabled>Éliminer ce joueur</button>
+    <div class="g48"></div>
+  </div>
+</div>
+
+<!-- SOLO: RÉSULTAT ÉLIMINATION -->
+<div class="screen" id="s-solo-result">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;width:100%;">
+    <div class="t-xs" style="margin-bottom:24px;">JOUEUR ÉLIMINÉ</div>
+    <div class="liar-ring" id="sr-avatar" style="margin:0 auto;"></div>
+    <div class="g20"></div>
+    <div style="font-size:20px;font-weight:700;" id="sr-name">Alex</div>
+    <div class="g4"></div>
+    <div style="font-size:15px;color:var(--grey);">était</div>
+    <div class="g8"></div>
+    <div class="menteur-text" id="sr-role-text">MENTEUR</div>
+    <div class="g24"></div>
+    <div style="padding:16px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--bg3);width:100%;" id="sr-game-status"></div>
+    <div class="g32"></div>
+    <button class="btn btn-red" id="sr-next-btn" onclick="soloNextRound()">Manche suivante →</button>
+    <div class="g48"></div>
+  </div>
+</div>
+
+<!-- SOLO: FIN -->
+<div class="screen" id="s-solo-end">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;width:100%;">
+    <div style="font-size:72px;margin-bottom:24px;" id="se-trophy">🏆</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,10vw,52px);letter-spacing:3px;margin-bottom:8px;" id="se-winner-team">LES VÉRITÉS</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,15vw,72px);color:var(--red);letter-spacing:4px;text-shadow:0 0 30px var(--red-glow);margin-bottom:24px;">GAGNENT !</div>
+    <div style="padding:20px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--bg3);width:100%;margin-bottom:32px;" id="se-summary"></div>
+    <button class="btn btn-outline-red" onclick="goHome()">Nouvelle partie</button>
+    <div class="g48"></div>
+  </div>
+</div>
 </body>
 </html>
