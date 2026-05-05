@@ -221,6 +221,14 @@ input::placeholder{color:var(--grey2);font-weight:400;}
     <div class="rule-card"><div class="rule-num">04</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Le vote</div><div style="font-size:13px;color:var(--grey);">Chaque joueur vote pour celui qu'il suspecte. Un seul vote.</div></div>
     <div class="rule-card"><div class="rule-num">05</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Les points</div><div style="font-size:13px;color:var(--grey);">Menteur non démasqué → <span style="color:var(--red);font-weight:700;">+2 pts</span>. Vérité qui vote juste → <strong>+1 pt</strong>.</div></div>
     <div class="g20"></div>
+    <div class="g20"></div>
+<div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:12px;">MODE 1 TÉLÉPHONE</div>
+<div class="rule-card"><div class="rule-num">01</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Saisie des joueurs</div><div style="font-size:13px;color:var(--grey);">Le host entre tous les prénoms, configure les manches et les menteurs.</div></div>
+<div class="rule-card"><div class="rule-num">02</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Passage du téléphone</div><div style="font-size:13px;color:var(--grey);">Chaque joueur reçoit le téléphone, découvre son rôle secret, mémorise et passe au suivant.</div></div>
+<div class="rule-card"><div class="rule-num">03</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Question à voix haute</div><div style="font-size:13px;color:var(--grey);">Le host lit la question. Tout le monde répond à voix haute. Les menteurs ont leur rôle pour toute la partie.</div></div>
+<div class="rule-card"><div class="rule-num">04</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Vote & élimination</div><div style="font-size:13px;color:var(--grey);">Le groupe débat puis vote. Le host élimine le suspect et révèle son rôle.</div></div>
+<div class="rule-card"><div class="rule-num">05</div><div style="font-size:14px;font-weight:700;margin-bottom:4px;">Victoire</div><div style="font-size:13px;color:var(--grey);">Les vérités gagnent si tous les menteurs sont éliminés. Les menteurs gagnent s'ils représentent la majorité des survivants.</div></div>
+<div class="g12"></div>
     <button class="btn btn-dark" onclick="closeRules()">Compris !</button>
   </div>
 </div>
@@ -371,7 +379,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
     <div class="player-list" id="player-list"></div>
     <div class="g32"></div>
     <div id="host-actions">
-      <div class="t-sm t-center" id="start-hint" style="margin-bottom:12px;">Minimum 4 joueurs pour démarrer</div>
+      <div class="t-sm t-center" id="start-hint" style="margin-bottom:12px;">Minimum 3 joueurs pour démarrer</div>
       <button class="btn btn-red" id="btn-start" onclick="startGame()" disabled>Lancer la partie</button>
     </div>
     <div id="guest-waiting" style="display:none;text-align:center;">
@@ -692,9 +700,9 @@ async function refreshLobby(){
   document.getElementById('player-list').innerHTML=players.map(function(p){
     return '<div class="player-item"><div class="p-avatar">'+avatarHtml(p.avatar,'44px')+'</div><span class="p-name">'+p.name+'</span>'+(p.is_host?'<span class="p-host">HOST</span>':'')+'</div>';
   }).join('');
-  const canStart=players.length>=4;
+  const canStart=players.length>=3;
   const btn=document.getElementById('btn-start');
-  if(btn){btn.disabled=!canStart;document.getElementById('start-hint').textContent=canStart?players.length+' joueurs connectés':'Minimum 4 joueurs pour démarrer';}
+  if(btn){btn.disabled=!canStart;document.getElementById('start-hint').textContent=canStart?players.length+' joueurs connectés':'Minimum 3 joueurs pour démarrer';}
 }
 
 // ── POLLING ───────────────────────────────────────────────────────────────
@@ -746,7 +754,7 @@ async function startGame(){
   if(!state.isHost)return;
   document.getElementById('btn-start').disabled=true;
   const players=await db.get('players','room_id=eq.'+state.roomId);
-  if(players.length<4){showNotif('Minimum 4 joueurs','error');return;}
+  if(players.length<3){showNotif('Minimum 3 joueurs','error');return;}
   state.players=players;state.currentRound=1;
   await db.patch('rooms','id=eq.'+state.roomId,{status:'playing',current_round:1});
   await assignRoles(players);
@@ -1083,9 +1091,15 @@ async function startSoloGame() {
   var shuffledPassOrder = sortedPass.map(function(x){ return x.idx; });
 
   // Créer les joueurs avec rôles mélangés
-  soloState.players = names.map(function(name, i){
-    return { name: name, role: shuffledRoles[i], alive: true, originalIdx: i };
-  });
+  // Mélanger les avatars aléatoirement
+var avatarPool = [...AVATARS];
+var rndAv = new Uint32Array(avatarPool.length);
+window.crypto.getRandomValues(rndAv);
+avatarPool.sort(function(a,b){ return rndAv[AVATARS.indexOf(a)] - rndAv[AVATARS.indexOf(b)]; });
+
+soloState.players = names.map(function(name, i){
+  return { name: name, role: shuffledRoles[i], alive: true, originalIdx: i, avatar: avatarPool[i % avatarPool.length] };
+});
 
   // Ordre de passage indépendant du rôle
   soloState.passOrder = shuffledPassOrder;
@@ -1104,8 +1118,9 @@ function soloShowPass() {
   const total = soloState.players.length;
   const idx = soloState.currentPlayerIdx + 1;
   document.getElementById('solo-pass-step').textContent = 'JOUEUR ' + idx + ' / ' + total;
-  document.getElementById('solo-pass-name').textContent = player.name.toUpperCase();
-  document.getElementById('solo-pass-card').className = 'pass-card';
+document.getElementById('solo-pass-name').textContent = player.name.toUpperCase();
+document.getElementById('solo-pass-avatar').src = player.avatar || AVATARS[0];
+document.getElementById('solo-pass-card').className = 'pass-card';
   showScreen('s-solo-pass');
 }
 
@@ -1269,7 +1284,10 @@ function soloEndGame(truthsWin) {
   if (truthsWin) {
     trophy.textContent = '🛡️';
     winner.textContent = 'LES VÉRITÉS';
-    winner.style.color = '#fff';
+winner.style.color = '#2ECC71';
+document.getElementById('se-win-text').style.color = '#2ECC71';
+document.getElementById('se-win-text').style.textShadow = '0 0 30px rgba(46,204,113,0.4)';
+document.getElementById('se-winner-team').nextElementSibling.style.color = '#2ECC71';
   } else {
     trophy.textContent = '🎭';
     winner.textContent = 'LES MENTEURS';
@@ -1304,11 +1322,10 @@ window.addEventListener('load',function(){
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;width:100%;">
     <div class="t-xs" id="solo-pass-step" style="margin-bottom:32px;">JOUEUR 1 / 5</div>
     <div class="pass-card" id="solo-pass-card">
-      <div style="font-size:48px;margin-bottom:16px;" id="solo-pass-emoji">📱</div>
-      <div class="t-xs" style="margin-bottom:8px;">Passe le téléphone à</div>
+     <img id="solo-pass-avatar" src="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;margin-bottom:16px;">
+<div class="t-xs" style="margin-bottom:8px;">Passe le téléphone à</div>
       <div class="player-turn-name" id="solo-pass-name">Alex</div>
       <div class="g16"></div>
-      <div style="font-size:13px;color:var(--grey);">Entre ton prénom et appuie sur le bouton</div>
     </div>
     <div class="g32"></div>
     <div style="width:100%;max-width:340px;">
@@ -1397,7 +1414,7 @@ window.addEventListener('load',function(){
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;width:100%;">
     <div style="font-size:72px;margin-bottom:24px;" id="se-trophy">🏆</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,10vw,52px);letter-spacing:3px;margin-bottom:8px;" id="se-winner-team">LES VÉRITÉS</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,15vw,72px);color:var(--red);letter-spacing:4px;text-shadow:0 0 30px var(--red-glow);margin-bottom:24px;">GAGNENT !</div>
+    <div id="se-win-text" style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,15vw,72px);color:var(--red);letter-spacing:4px;text-shadow:0 0 30px var(--red-glow);margin-bottom:24px;">GAGNENT !</div>
     <div style="padding:20px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--bg3);width:100%;margin-bottom:32px;" id="se-summary"></div>
     <button class="btn btn-outline-red" onclick="goHome()">Nouvelle partie</button>
     <div class="g48"></div>
