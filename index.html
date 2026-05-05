@@ -339,7 +339,7 @@ input::placeholder{color:var(--grey2);font-weight:400;}
     <div class="player-list" id="player-list"></div>
     <div class="g32"></div>
     <div id="host-actions">
-      <div class="t-sm t-center" id="start-hint" style="margin-bottom:12px;">Minimum 4 joueurs pour démarrer</div>
+      <div class="t-sm t-center" id="start-hint" style="margin-bottom:12px;">Minimum 3 joueurs pour démarrer</div>
       <button class="btn btn-red" id="btn-start" onclick="startGame()" disabled>Lancer la partie</button>
     </div>
     <div id="guest-waiting" style="display:none;text-align:center;">
@@ -662,9 +662,9 @@ async function refreshLobby(){
   document.getElementById('player-list').innerHTML=players.map(function(p){
     return '<div class="player-item"><div class="p-avatar">'+avatarHtml(p.avatar,'44px')+'</div><span class="p-name">'+p.name+'</span>'+(p.is_host?'<span class="p-host">HOST</span>':'')+'</div>';
   }).join('');
-  const canStart=players.length>=4;
+  const canStart=players.length>=3;
   const btn=document.getElementById('btn-start');
-  if(btn){btn.disabled=!canStart;document.getElementById('start-hint').textContent=canStart?players.length+' joueurs connectés':'Minimum 4 joueurs pour démarrer';}
+  if(btn){btn.disabled=!canStart;document.getElementById('start-hint').textContent=canStart?players.length+' joueurs connectés':'Minimum 3 joueurs pour démarrer';}
 }
 
 // ── POLLING ───────────────────────────────────────────────────────────────
@@ -716,7 +716,7 @@ async function startGame(){
   if(!state.isHost)return;
   document.getElementById('btn-start').disabled=true;
   const players=await db.get('players','room_id=eq.'+state.roomId);
-  if(players.length<4){showNotif('Minimum 4 joueurs','error');return;}
+  if(players.length<3){showNotif('Minimum 3 joueurs','error');return;}
   state.players=players;state.currentRound=1;
   await db.patch('rooms','id=eq.'+state.roomId,{status:'playing',current_round:1});
   await assignRoles(players);
