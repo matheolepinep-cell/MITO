@@ -1186,7 +1186,8 @@ function soloStartVote() {
   document.getElementById('sv-round-label').textContent = 'Manche ' + soloState.currentRound;
   document.getElementById('sv-progress').style.width = Math.min((soloState.currentRound / 10) * 100, 100) + '%';
   document.getElementById('solo-vote-list').innerHTML = alive.map(function(p) {
-    return '<div class="vote-item" id="svote-' + p.idx + '" onclick="soloSelectEliminate(' + p.idx + ')">' +
+    var pid = p.originalIdx !== undefined ? p.originalIdx : p.idx;
+    return '<div class="vote-item" id="svote-' + pid + '" onclick="soloSelectEliminate(' + pid + ')">' +
       '<span style="font-size:32px;">👤</span>' +
       '<span style="font-size:16px;font-weight:600;flex:1;">' + p.name + '</span>' +
       '<div class="vote-check"></div></div>';
@@ -1198,8 +1199,8 @@ function soloStartVote() {
 
 function soloSelectEliminate(idx) {
   soloState.selectedEliminate = idx;
-  document.querySelectorAll('.vote-item').forEach(el => el.classList.remove('selected'));
-  const el = document.getElementById('svote-' + idx);
+  document.querySelectorAll('#solo-vote-list .vote-item').forEach(function(el){ el.classList.remove('selected'); });
+  var el = document.getElementById('svote-' + idx);
   if (el) el.classList.add('selected');
   document.getElementById('solo-btn-eliminate').disabled = false;
 }
@@ -1207,7 +1208,11 @@ function soloSelectEliminate(idx) {
 function soloEliminate() {
   stopChronoSound();
   if (soloState.selectedEliminate === null) return;
-  const player = soloState.players[soloState.selectedEliminate];
+  const player = soloState.players.find(function(p){
+    var pid = p.originalIdx !== undefined ? p.originalIdx : p.idx;
+    return pid === soloState.selectedEliminate;
+  });
+  if(!player){ showNotif('Erreur de sélection', 'error'); return; }
   player.alive = false;
 
   // Révéler le rôle
