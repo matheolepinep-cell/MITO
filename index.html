@@ -1060,18 +1060,36 @@ async function startSoloGame() {
   soloState.usedQuestionIds = new Set();
 
   // Assignation des rôles
- const shuffled = [...names];
-for(let i = shuffled.length-1; i > 0; i--){
-  const j = Math.floor(Math.random()*(i+1));
-  [shuffled[i],shuffled[j]] = [shuffled[j],shuffled[i]];
-}
 const liarCount = Math.min(cfgLiars, Math.floor(names.length / 2));
-soloState.players = shuffled.map((name, i) => ({
-    name: name,
-    role: i < liarCount ? 'lie' : 'truth',
-    alive: true,
-    idx: i
-  }));
+
+// Créer les rôles séparément puis les mélanger indépendamment
+const roles = [];
+for(let i = 0; i < names.length; i++){
+  roles.push(i < liarCount ? 'lie' : 'truth');
+}
+// Mélanger les rôles de façon cryptographiquement plus robuste
+const roleArray = new Uint32Array(roles.length);
+window.crypto.getRandomValues(roleArray);
+const indexedRoles = roles.map((r, i) => ({r, sort: roleArray[i]}));
+indexedRoles.sort((a, b) => a.sort - b.sort);
+const shuffledRoles = indexedRoles.map(x => x.r);
+
+// Ordre de passage aussi mélangé indépendamment
+const passOrder = names.map((name, i) => i);
+const passArray = new Uint32Array(passOrder.length);
+window.crypto.getRandomValues(passArray);
+const indexedPass = passOrder.map((idx, i) => ({idx, sort: passArray[i]}));
+indexedPass.sort((a, b) => a.sort - b.sort);
+
+soloState.players = names.map((name, i) => ({
+  name: name,
+  role: shuffledRoles[i],
+  alive: true,
+  idx: i
+}));
+// Ordre de passage aléatoire indépendant des rôles
+soloState.passOrder = indexedPass.map(x => x.idx);
+soloState.currentPlayerIdx = 0;
 
   // Charger les questions
   const allQ = await db.get('questions', 'category=eq.' + selectedCat + '&limit=200');
