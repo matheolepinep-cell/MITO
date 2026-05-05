@@ -1051,7 +1051,7 @@ function addSoloPlayer() {
 // Lancer la partie solo
 async function startSoloGame() {
   const inputs = document.querySelectorAll('#solo-player-inputs input');
-  const names = Array.from(inputs).map(i => i.value.trim()).filter(n => n.length > 0);
+  const names = Array.from(inputs).map(function(i){ return i.value.trim(); }).filter(function(n){ return n.length > 0; });
   if (names.length < 3) { showNotif('Minimum 3 joueurs', 'error'); return; }
 
   soloState.liarCount = cfgLiars;
@@ -1059,49 +1059,48 @@ async function startSoloGame() {
   soloState.currentRound = 1;
   soloState.usedQuestionIds = new Set();
 
-  // Assignation des rôles
-const liarCount = Math.min(cfgLiars, Math.floor(names.length / 2));
+  const liarCount = Math.min(cfgLiars, Math.floor(names.length / 2));
 
-// Créer les rôles séparément puis les mélanger indépendamment
-const roles = [];
-for(let i = 0; i < names.length; i++){
-  roles.push(i < liarCount ? 'lie' : 'truth');
-}
-// Mélanger les rôles de façon cryptographiquement plus robuste
-const roleArray = new Uint32Array(roles.length);
-window.crypto.getRandomValues(roleArray);
-const indexedRoles = roles.map((r, i) => ({r, sort: roleArray[i]}));
-indexedRoles.sort((a, b) => a.sort - b.sort);
-const shuffledRoles = indexedRoles.map(x => x.r);
+  // Créer tableau de rôles : ex [lie, truth, truth, truth]
+  const roles = [];
+  for(var i = 0; i < names.length; i++){
+    roles.push(i < liarCount ? 'lie' : 'truth');
+  }
 
-// Ordre de passage aussi mélangé indépendamment
-const passOrder = names.map((name, i) => i);
-const passArray = new Uint32Array(passOrder.length);
-window.crypto.getRandomValues(passArray);
-const indexedPass = passOrder.map((idx, i) => ({idx, sort: passArray[i]}));
-indexedPass.sort((a, b) => a.sort - b.sort);
+  // Mélanger les rôles avec crypto (vraiment aléatoire)
+  var rndRoles = new Uint32Array(roles.length);
+  window.crypto.getRandomValues(rndRoles);
+  var sortedRoles = roles.map(function(r, i){ return {r:r, s:rndRoles[i]}; });
+  sortedRoles.sort(function(a,b){ return a.s - b.s; });
+  var shuffledRoles = sortedRoles.map(function(x){ return x.r; });
 
-soloState.players = names.map((name, i) => ({
-  name: name,
-  role: shuffledRoles[i],
-  alive: true,
-  idx: i
-}));
-// Ordre de passage aléatoire indépendant des rôles
-soloState.passOrder = indexedPass.map(x => x.idx);
-soloState.currentPlayerIdx = 0;
+  // Mélanger l'ordre de passage des joueurs séparément
+  var passOrder = names.map(function(n, i){ return i; });
+  var rndPass = new Uint32Array(passOrder.length);
+  window.crypto.getRandomValues(rndPass);
+  var sortedPass = passOrder.map(function(idx, i){ return {idx:idx, s:rndPass[i]}; });
+  sortedPass.sort(function(a,b){ return a.s - b.s; });
+  var shuffledPassOrder = sortedPass.map(function(x){ return x.idx; });
+
+  // Créer les joueurs avec rôles mélangés
+  soloState.players = names.map(function(name, i){
+    return { name: name, role: shuffledRoles[i], alive: true, originalIdx: i };
+  });
+
+  // Ordre de passage indépendant du rôle
+  soloState.passOrder = shuffledPassOrder;
+  soloState.currentPlayerIdx = 0;
 
   // Charger les questions
   const allQ = await db.get('questions', 'category=eq.' + selectedCat + '&limit=200');
   soloState.questions = allQ;
 
-  // Commencer le passage du téléphone
-  soloState.currentPlayerIdx = 0;
   soloShowPass();
 }
 
 function soloShowPass() {
-  const player = soloState.players[soloState.currentPlayerIdx];
+  const realIdx = soloState.passOrder[soloState.currentPlayerIdx];
+  const player = soloState.players[realIdx];
   const total = soloState.players.length;
   const idx = soloState.currentPlayerIdx + 1;
   document.getElementById('solo-pass-step').textContent = 'JOUEUR ' + idx + ' / ' + total;
@@ -1111,7 +1110,8 @@ function soloShowPass() {
 }
 
 function soloRevealRole() {
-  const player = soloState.players[soloState.currentPlayerIdx];
+  const realIdx = soloState.passOrder[soloState.currentPlayerIdx];
+  const player = soloState.players[realIdx];
   const card = document.getElementById('solo-role-card');
   const emoji = document.getElementById('solo-role-emoji');
   const text = document.getElementById('solo-role-text');
@@ -1303,6 +1303,7 @@ window.addEventListener('load',function(){
       <div class="t-xs" style="margin-bottom:8px;">Passe le téléphone à</div>
       <div class="player-turn-name" id="solo-pass-name">Alex</div>
       <div class="g16"></div>
+      <div style="font-size:13px;color:var(--grey);">Entre ton prénom et appuie sur le bouton</div>
     </div>
     <div class="g32"></div>
     <div style="width:100%;max-width:340px;">
